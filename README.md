@@ -26,17 +26,14 @@ Principled Shader Support
 With the addition of the the Principled BSDF shader in Blender and the upcomming support for physically based materials 
 in Panda3D it was possible to extend YABEE to improve the workflow for artists when working in a PBR environment. 
 
-<img src="http://pasteall.org/pic/show.php?id=c278bebee6e22ce886ffd4448948c70f" />
-<p style="font-size: small">Cube in Panda3D via pview</p>
-
-<img src="http://pasteall.org/pic/show.php?id=577bde9e918f165b565fbfe48af5e640" />
+<img src="https://i.imgur.com/YaHcdbk.png" />
 <p style="font-size: small">Multimeshed object using multple (two) textures in Panda3D</p>
 
-<img src="http://pasteall.org/pic/show.php?id=759bde93c4cebf99ad9460bed2826504" />
+<img src="https://i.imgur.com/iIZNZC8.png" />
 <p style="font-size: small">My multimeshed rigged character using multple textures in Panda3D 
 (Regular meshes) </p>
 
-<img src="http://pasteall.org/pic/show.php?id=0ba65151691c7eb6873771d89c77c466" />
+<img src="https://i.imgur.com/v37q51J.png" />
 <p style="font-size: small">YABEE becomes more Blender-compatible: No special Nodegroup is needed anymore</p>
 
 To use it, you have to create a material for your mesh, set up the Principled BSDF shader 
@@ -54,7 +51,7 @@ How To Export
 =====
 Before exporting:
 
-<img src="http://pasteall.org/pic/show.php?id=909fc4a59a7b60aff1c7c23eefb1dc6a" />
+<img src="https://i.imgur.com/gbc0jbB.png" />
 
 1. Select all meshes of the character except armature, or
 2. Select all meshes of the character including armature
@@ -63,5 +60,5 @@ Experimental Non-Shader Mode for Materials:
 
 This mode doesn't use Nodes.
 
-<img src="http://pasteall.org/pic/show.php?id=e404578d812e6bfb86c07b519bb9b385" />
+<img src="https://i.imgur.com/1cOYHvc.png" />
 <p style="font-size: small">Disable "Use Nodes" to activate Non-Shader Mode (currently works for PBR render pipelines)</p>
