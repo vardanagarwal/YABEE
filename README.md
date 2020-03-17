@@ -3,7 +3,7 @@
 
 YABEE 14.4
 =====
-Renewed Egg exporter for the Blender 2.8 and Panda3D
+Renewed Egg exporter for Blender 2.8 and Panda3D
 
 Exporting:
 - Meshes
