@@ -243,7 +243,7 @@ class YABEEProperty(bpy.types.PropertyGroup):
     def check_warns(self, context):
         warns = []
         if len(context.selected_objects) == 0:
-            warns.append('Nothing to export. Please, select "Mesh", \n' + \
+            warns.append('Nothing to export. Please, select "Mesh" and \n' + \
                          '"Armature" or "Curve" objects.')
         for name, param in self.opt_anim_list.get_anim_dict().items():
             if param[0] == param[1]:
@@ -306,9 +306,9 @@ class WarnDialog(bpy.types.Operator):
         for warn in warns:
             for n, line in enumerate(warn.splitlines()):
                 if n == 0:
-                    self.layout.row().label(line, icon="ERROR")
+                    self.layout.row().label(text=line, icon="ERROR")
                 else:
-                    self.layout.row().label('    ' + line, icon="NONE")
+                    self.layout.row().label(text='    ' + line, icon="NONE")
 
     def execute(self, context):
         # print("Dialog Runs")

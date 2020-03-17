@@ -171,7 +171,8 @@ class Group:
             if self.object.__class__ == bpy.types.Bone:
                 egg_str.append('%s<Joint> %s {\n' % ('  ' * level, eggSafeName(self.object.yabee_name)))
             else:
-                egg_str.append('%s<Group> %s {\n' % ('  ' * level, eggSafeName(self.object.yabee_name)))
+                egg_str.append('%s<Group> %s {\n  <Collide> { Polyset keep descend }\n'\
+                               % ('  ' * level, eggSafeName(self.object.yabee_name)))
                 if self.object.type == 'MESH' \
                         and (self.object.data.shape_keys \
                              and len(self.object.data.shape_keys.key_blocks) > 1):
