@@ -66,7 +66,7 @@ class YABEEProperty(bpy.types.PropertyGroup):
     opt_tex_proc: StringProperty(
         name="Tex. processing",
         description="Export all textures as MODULATE or bake texture layers",
-        default='BAKE',
+        default='NO',
     )
 
     opt_bake_diffuse: PointerProperty(type=EGGBakeProperty)

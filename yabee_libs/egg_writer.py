@@ -1169,15 +1169,15 @@ def get_egg_materials_str(object_names=None):
                     base_b = basecol[2]
                     base_a = basecol[3]
 
-                    mat_str += '  <Scalar> baser { %s }\n' % STRF(base_r)
-                    mat_str += '  <Scalar> baseg { %s }\n' % STRF(base_g)
-                    mat_str += '  <Scalar> baseb { %s }\n' % STRF(base_b)
-                    mat_str += '  <Scalar> basea { %s }\n' % STRF(base_a)
+                    mat_str += '  <Scalar> baser { 1 }\n'
+                    mat_str += '  <Scalar> baseg { 1 }\n'
+                    mat_str += '  <Scalar> baseb { 1 }\n'
+                    # mat_str += '  <Scalar> basea { %s }\n'
 
                     # ("DEFAULT", "EMISSIVE", "CLEARCOAT", "TRANSPARENT","SKIN", "FOLIAGE")
-                    mat_str += '  <Scalar> roughness { %s }\n' % STRF(roughness)
-                    mat_str += '  <Scalar> metallic { %s }\n' % STRF(metallic)
-                    mat_str += '  <Scalar> local { %s }\n' % STRF(0.0)
+                    mat_str += '  <Scalar> roughness { 1 }\n'
+                    mat_str += '  <Scalar> metallic { 1 }\n'
+                    mat_str += '  <Scalar> local { 0 }\n'
 
                 elif nodeTree.links[0].to_node.name == 'Material Output':
                     print("INFO: {} is using for!".format(nodeTree.links[0].to_node.name)),
@@ -1194,15 +1194,25 @@ def get_egg_materials_str(object_names=None):
                             base_b = basecol[2]
                             base_a = basecol[3]
 
-                            mat_str += '  <Scalar> baser { %s }\n' % STRF(base_r)
-                            mat_str += '  <Scalar> baseg { %s }\n' % STRF(base_g)
-                            mat_str += '  <Scalar> baseb { %s }\n' % STRF(base_b)
-                            mat_str += '  <Scalar> basea { %s }\n' % STRF(base_a)
+                            mat_str += '  <Scalar> baser { 1 }\n'
+                            mat_str += '  <Scalar> baseg { 1 }\n'
+                            mat_str += '  <Scalar> baseb { 1 }\n'
+                            # mat_str += '  <Scalar> basea { %s }\n'
 
                             # ("DEFAULT", "EMISSIVE", "CLEARCOAT", "TRANSPARENT","SKIN", "FOLIAGE")
-                            mat_str += '  <Scalar> roughness { %s }\n' % STRF(roughness)
-                            mat_str += '  <Scalar> metallic { %s }\n' % STRF(metallic)
-                            mat_str += '  <Scalar> local { %s }\n' % STRF(0.0)
+                            mat_str += '  <Scalar> roughness { 1 }\n'
+                            mat_str += '  <Scalar> metallic { 1 }\n'
+                            mat_str += '  <Scalar> local { 0 }\n'
+        else:
+            mat_str += '  <Scalar> baser { 1 }\n'
+            mat_str += '  <Scalar> baseg { 1 }\n'
+            mat_str += '  <Scalar> baseb { 1 }\n'
+            # mat_str += '  <Scalar> basea { %s }\n'
+
+            # ("DEFAULT", "EMISSIVE", "CLEARCOAT", "TRANSPARENT","SKIN", "FOLIAGE")
+            mat_str += '  <Scalar> roughness { 1 }\n'
+            mat_str += '  <Scalar> metallic { 1 }\n'
+            mat_str += '  <Scalar> local { 0 }\n'
 
         if matIsFancyPBRNode is False:
             print("INFO: Non-Shader Mode is using for!")
@@ -1228,10 +1238,10 @@ def get_egg_materials_str(object_names=None):
                         mat_str += '  <Scalar> metallic { %s }\n' % STRF(mat.metallic)
                         mat_str += '  <Scalar> local { %s }\n' % STRF(0.0)
 
-        if TEXTURE_PROCESSOR == 'BAKE' and mat.use_nodes:
+        """if TEXTURE_PROCESSOR == 'BAKE' and mat.use_nodes:
             mat_str += '  <Scalar> diffr { 1.0 }\n'
             mat_str += '  <Scalar> diffg { 1.0 }\n'
-            mat_str += '  <Scalar> diffb { 1.0 }\n'
+            mat_str += '  <Scalar> diffb { 1.0 }\n'"""
 
         mat_str += '}\n\n'
 
@@ -1516,9 +1526,13 @@ def write_out(fname, anims, from_actions, uv_img_as_tex, sep_anim, a_only,
                     if len(face.vertices) > 4:
                         obj.modifiers.new('triangulate_for_TBS', 'TRIANGULATE')
                         print('WARNING:TBS: Triangulate %s to avoid non tris/quads polygons' % obj.yabee_name)
-                        bpy.context.scene.objects.active = obj
-                        bpy.ops.object.modifier_apply(modifier='triangulate_for_TBS')
-                        break
+                        # TODO: bpy.context.scene.objects.active
+                        if hasattr(bpy.context.scene.objects, "active"):
+                            bpy.context.scene.objects.active = obj
+                            bpy.ops.object.modifier_apply(modifier='triangulate_for_TBS')
+                            break
+                        else:
+                            print('WARNING: bpy.context.scene.objects.active attribute not found')
         if APPLY_MOD:
             apply_modifiers(obj_list)
         reparenting_to_armature(obj_list)
