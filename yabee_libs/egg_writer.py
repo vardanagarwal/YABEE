@@ -1169,15 +1169,15 @@ def get_egg_materials_str(object_names=None):
                     base_b = basecol[2]
                     base_a = basecol[3]
 
-                    mat_str += '  <Scalar> baser { 1 }\n'
-                    mat_str += '  <Scalar> baseg { 1 }\n'
-                    mat_str += '  <Scalar> baseb { 1 }\n'
-                    # mat_str += '  <Scalar> basea { %s }\n'
+                    mat_str += '  <Scalar> baser { %s }\n' % STRF(base_r)
+                    mat_str += '  <Scalar> baseg { %s }\n' % STRF(base_g)
+                    mat_str += '  <Scalar> baseb { %s }\n' % STRF(base_b)
+                    mat_str += '  <Scalar> basea { %s }\n' % STRF(base_a)
 
                     # ("DEFAULT", "EMISSIVE", "CLEARCOAT", "TRANSPARENT","SKIN", "FOLIAGE")
-                    mat_str += '  <Scalar> roughness { 1 }\n'
-                    mat_str += '  <Scalar> metallic { 1 }\n'
-                    mat_str += '  <Scalar> local { 0 }\n'
+                    mat_str += '  <Scalar> roughness { %s }\n' % STRF(roughness)
+                    mat_str += '  <Scalar> metallic { %s }\n' % STRF(metallic)
+                    mat_str += '  <Scalar> local { %s }\n' % STRF(0.0)
 
                 elif nodeTree.links[0].to_node.name == 'Material Output':
                     print("INFO: {} is using for!".format(nodeTree.links[0].to_node.name)),
@@ -1194,15 +1194,15 @@ def get_egg_materials_str(object_names=None):
                             base_b = basecol[2]
                             base_a = basecol[3]
 
-                            mat_str += '  <Scalar> baser { 1 }\n'
-                            mat_str += '  <Scalar> baseg { 1 }\n'
-                            mat_str += '  <Scalar> baseb { 1 }\n'
-                            # mat_str += '  <Scalar> basea { %s }\n'
+                            mat_str += '  <Scalar> baser { %s }\n' % STRF(base_r)
+                            mat_str += '  <Scalar> baseg { %s }\n' % STRF(base_g)
+                            mat_str += '  <Scalar> baseb { %s }\n' % STRF(base_b)
+                            mat_str += '  <Scalar> basea { %s }\n' % STRF(base_a)
 
                             # ("DEFAULT", "EMISSIVE", "CLEARCOAT", "TRANSPARENT","SKIN", "FOLIAGE")
-                            mat_str += '  <Scalar> roughness { 1 }\n'
-                            mat_str += '  <Scalar> metallic { 1 }\n'
-                            mat_str += '  <Scalar> local { 0 }\n'
+                            mat_str += '  <Scalar> roughness { %s }\n' % STRF(roughness)
+                            mat_str += '  <Scalar> metallic { %s }\n' % STRF(metallic)
+                            mat_str += '  <Scalar> local { %s }\n' % STRF(0.0)
         else:
             mat_str += '  <Scalar> baser { 1 }\n'
             mat_str += '  <Scalar> baseg { 1 }\n'
