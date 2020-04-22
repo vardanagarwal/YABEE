@@ -1232,6 +1232,17 @@ def get_egg_materials_str(object_names=None):
                             mat_str += '  <Scalar> metallic { %s }\n' % str(metallic)
                             mat_str += '  <Scalar> local { %s }\n' % str(0)
 
+                else:
+                    # TODO: Use if no input is active
+                    mat_str += '  <Scalar> baser { 1 }\n'
+                    mat_str += '  <Scalar> baseg { 1 }\n'
+                    mat_str += '  <Scalar> baseb { 1 }\n'
+                    mat_str += '  <Scalar> basea { 1 }\n'
+                    mat_str += '  <Scalar> shininess { 1 }\n'
+                    mat_str += '  <Scalar> roughness { 1 }\n'
+                    mat_str += '  <Scalar> metallic { 0 }\n'
+                    mat_str += '  <Scalar> local { 0 }\n'
+
         if matIsFancyPBRNode is False:
             print("INFO: Non-Shader Mode is using for!")
             if matFancyType == 0:
