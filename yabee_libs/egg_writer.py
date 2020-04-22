@@ -1181,16 +1181,14 @@ def get_egg_materials_str(object_names=None):
                     base_b = basecol[2]
                     base_a = basecol[3]
 
-                    mat_str += '  <Scalar> baser { %s }\n' % STRF(base_r)
-                    mat_str += '  <Scalar> baseg { %s }\n' % STRF(base_g)
-                    mat_str += '  <Scalar> baseb { %s }\n' % STRF(base_b)
-                    mat_str += '  <Scalar> basea { %s }\n' % STRF(base_a)
-
-                    # ("DEFAULT", "EMISSIVE", "CLEARCOAT", "TRANSPARENT","SKIN", "FOLIAGE")
-                    mat_str += '  <Scalar> shininess { %s }\n' % STRF(specular)
-                    mat_str += '  <Scalar> roughness { %s }\n' % STRF(roughness)
-                    mat_str += '  <Scalar> metallic { %s }\n' % STRF(metallic)
-                    mat_str += '  <Scalar> local { %s }\n' % STRF(0)
+                    mat_str += '  <Scalar> baser { %s }\n' % str(base_r)
+                    mat_str += '  <Scalar> baseg { %s }\n' % str(base_g)
+                    mat_str += '  <Scalar> baseb { %s }\n' % str(base_b)
+                    mat_str += '  <Scalar> basea { %s }\n' % str(base_a)
+                    mat_str += '  <Scalar> shininess { %s }\n' % str(specular)
+                    mat_str += '  <Scalar> roughness { %s }\n' % str(roughness)
+                    mat_str += '  <Scalar> metallic { %s }\n' % str(metallic)
+                    mat_str += '  <Scalar> local { %s }\n' % str(0)
 
                 elif nodeTree.links[0].to_node.name == 'Material Output':
                     print("INFO: {} is using for!".format(nodeTree.links[0].to_node.name)),
@@ -1220,16 +1218,14 @@ def get_egg_materials_str(object_names=None):
                             base_b = basecol[2]
                             base_a = basecol[3]
 
-                            mat_str += '  <Scalar> baser { %s }\n' % STRF(base_r)
-                            mat_str += '  <Scalar> baseg { %s }\n' % STRF(base_g)
-                            mat_str += '  <Scalar> baseb { %s }\n' % STRF(base_b)
-                            mat_str += '  <Scalar> basea { %s }\n' % STRF(base_a)
-
-                            # ("DEFAULT", "EMISSIVE", "CLEARCOAT", "TRANSPARENT","SKIN", "FOLIAGE")
-                            mat_str += '  <Scalar> shininess { %s }\n' % STRF(specular)
-                            mat_str += '  <Scalar> roughness { %s }\n' % STRF(roughness)
-                            mat_str += '  <Scalar> metallic { %s }\n' % STRF(metallic)
-                            mat_str += '  <Scalar> local { %s }\n' % STRF(0)
+                            mat_str += '  <Scalar> baser { %s }\n' % str(base_r)
+                            mat_str += '  <Scalar> baseg { %s }\n' % str(base_g)
+                            mat_str += '  <Scalar> baseb { %s }\n' % str(base_b)
+                            mat_str += '  <Scalar> basea { %s }\n' % str(base_a)
+                            mat_str += '  <Scalar> shininess { %s }\n' % str(specular)
+                            mat_str += '  <Scalar> roughness { %s }\n' % str(roughness)
+                            mat_str += '  <Scalar> metallic { %s }\n' % str(metallic)
+                            mat_str += '  <Scalar> local { %s }\n' % str(0)
 
         if matIsFancyPBRNode is False:
             print("INFO: Non-Shader Mode is using for!")
@@ -1244,15 +1240,13 @@ def get_egg_materials_str(object_names=None):
                         base_b = basecol[2]
                         # diff_a = diffcol[3]
 
-                        mat_str += '  <Scalar> baser { %s }\n' % STRF(base_r)
-                        mat_str += '  <Scalar> baseg { %s }\n' % STRF(base_g)
-                        mat_str += '  <Scalar> baseb { %s }\n' % STRF(base_b)
+                        mat_str += '  <Scalar> baser { %s }\n' % str(base_r)
+                        mat_str += '  <Scalar> baseg { %s }\n' % str(base_g)
+                        mat_str += '  <Scalar> baseb { %s }\n' % str(base_b)
                         # mat_str += '  <Scalar> basea { %s }\n' % STRF(base_a)
-
-                        # ("DEFAULT", "EMISSIVE", "CLEARCOAT", "TRANSPARENT","SKIN", "FOLIAGE")
-                        mat_str += '  <Scalar> roughness { %s }\n' % STRF(mat.roughness)
-                        mat_str += '  <Scalar> metallic { %s }\n' % STRF(mat.metallic)
-                        mat_str += '  <Scalar> local { %s }\n' % STRF(0.0)
+                        mat_str += '  <Scalar> roughness { %s }\n' % str(mat.roughness)
+                        mat_str += '  <Scalar> metallic { %s }\n' % str(mat.metallic)
+                        mat_str += '  <Scalar> local { %s }\n' % str(0)
 
         mat_str += '}\n\n'
 
