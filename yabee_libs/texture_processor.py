@@ -81,6 +81,10 @@ class PbrTextures:
                                             scalars.append(('format', 'rgb'))
                                             scalars.append(('envtype', 'modulate'))
 
+                                        elif (link.to_socket.name == 'Roughness'
+                                              and link.from_node.outputs[0].is_linked):
+                                            scalars.append(('format', 'rgb'))
+
                                         # Make unique named Image Texture node by assigning the texture name
                                         # so we can use multiple textures for multimeshed object
                                         if textureNode.name:
@@ -132,7 +136,8 @@ class PbrTextures:
                                             scalars.append(('bordera', '1'))
 
                                         elif textureNode.extension in ('REPEAT', 'CHECKER'):
-                                            scalars.append(('wrap', 'repeat'))
+                                            scalars.append(('wrapu', 'repeat'))
+                                            scalars.append(('wrapv', 'repeat'))
 
                                         # Process coordinate mapping using a matrix.
                                         mappings = (
