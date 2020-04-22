@@ -50,7 +50,9 @@ class PbrTextures:
                         handled.add(mat)
 
                         nodeNames = {"Base Color": None,
-                                     "Normal": None}
+                                     "Normal": None,
+                                     "Roughness": None,
+                                     "Specular": None}
                         # let's crawl all links, find the ones connected to the PandaPBRNode,
                         # find the connected textures, use them.
                         for link in mat.node_tree.links:
@@ -64,7 +66,7 @@ class PbrTextures:
                                     textureNode = link.from_node
 
                                     if hasattr(textureNode, 'image'):
-                                        if textureNode.image == None:
+                                        if textureNode.image is None:
                                             print("WARNING: Texture node has no image assigned!", obj.name,
                                                   link.to_socket.name)
 

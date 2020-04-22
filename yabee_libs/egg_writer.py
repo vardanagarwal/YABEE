@@ -1161,6 +1161,7 @@ def get_egg_materials_str(object_names=None):
                     principled_bsdf = nodeTree.links[0].to_node
 
                     basecol = list(principled_bsdf.inputs["Base Color"].default_value)
+                    specular = principled_bsdf.inputs["Specular"].default_value
                     metallic = principled_bsdf.inputs["Metallic"].default_value
                     roughness = principled_bsdf.inputs["Roughness"].default_value
 
@@ -1175,6 +1176,7 @@ def get_egg_materials_str(object_names=None):
                     mat_str += '  <Scalar> basea { %s }\n' % STRF(base_a)
 
                     # ("DEFAULT", "EMISSIVE", "CLEARCOAT", "TRANSPARENT","SKIN", "FOLIAGE")
+                    mat_str += '  <Scalar> shininess { %s }\n' % STRF(specular)
                     mat_str += '  <Scalar> roughness { %s }\n' % STRF(roughness)
                     mat_str += '  <Scalar> metallic { %s }\n' % STRF(metallic)
                     mat_str += '  <Scalar> local { %s }\n' % STRF(0.0)
@@ -1186,6 +1188,7 @@ def get_egg_materials_str(object_names=None):
                         if node.name == "Principled BSDF":
                             principled_bsdf = node
                             basecol = list(principled_bsdf.inputs["Base Color"].default_value)
+                            specular = principled_bsdf.inputs["Specular"].default_value
                             metallic = principled_bsdf.inputs["Metallic"].default_value
                             roughness = principled_bsdf.inputs["Roughness"].default_value
 
@@ -1200,19 +1203,22 @@ def get_egg_materials_str(object_names=None):
                             mat_str += '  <Scalar> basea { %s }\n' % STRF(base_a)
 
                             # ("DEFAULT", "EMISSIVE", "CLEARCOAT", "TRANSPARENT","SKIN", "FOLIAGE")
+                            mat_str += '  <Scalar> shininess { %s }\n' % STRF(specular)
                             mat_str += '  <Scalar> roughness { %s }\n' % STRF(roughness)
                             mat_str += '  <Scalar> metallic { %s }\n' % STRF(metallic)
                             mat_str += '  <Scalar> local { %s }\n' % STRF(0.0)
-        else:
-            mat_str += '  <Scalar> baser { 1 }\n'
-            mat_str += '  <Scalar> baseg { 1 }\n'
-            mat_str += '  <Scalar> baseb { 1 }\n'
-            # mat_str += '  <Scalar> basea { %s }\n'
+                else:
+                    # TODO: Use if no input is active
+                    mat_str += '  <Scalar> baser { 1 }\n'
+                    mat_str += '  <Scalar> baseg { 1 }\n'
+                    mat_str += '  <Scalar> baseb { 1 }\n'
+                    mat_str += '  <Scalar> basea { 1 }\n'
 
-            # ("DEFAULT", "EMISSIVE", "CLEARCOAT", "TRANSPARENT","SKIN", "FOLIAGE")
-            mat_str += '  <Scalar> roughness { 1 }\n'
-            mat_str += '  <Scalar> metallic { 1 }\n'
-            mat_str += '  <Scalar> local { 0 }\n'
+                    # ("DEFAULT", "EMISSIVE", "CLEARCOAT", "TRANSPARENT","SKIN", "FOLIAGE")
+                    mat_str += '  <Scalar> shininess { 0 }\n'
+                    mat_str += '  <Scalar> roughness { 0 }\n'
+                    mat_str += '  <Scalar> metallic { 0 }\n'
+                    mat_str += '  <Scalar> local { 0 }\n'
 
         if matIsFancyPBRNode is False:
             print("INFO: Non-Shader Mode is using for!")
@@ -1221,7 +1227,6 @@ def get_egg_materials_str(object_names=None):
                     mat = bpy.data.materials[m_val]
                     if mat.use_nodes is False:
                         color = mat.diffuse_color
-                        metallic = 0
                         basecol = list(color)
                         base_r = basecol[0]
                         base_g = basecol[1]
@@ -1237,11 +1242,6 @@ def get_egg_materials_str(object_names=None):
                         mat_str += '  <Scalar> roughness { %s }\n' % STRF(mat.roughness)
                         mat_str += '  <Scalar> metallic { %s }\n' % STRF(mat.metallic)
                         mat_str += '  <Scalar> local { %s }\n' % STRF(0.0)
-
-        """if TEXTURE_PROCESSOR == 'BAKE' and mat.use_nodes:
-            mat_str += '  <Scalar> diffr { 1.0 }\n'
-            mat_str += '  <Scalar> diffg { 1.0 }\n'
-            mat_str += '  <Scalar> diffb { 1.0 }\n'"""
 
         mat_str += '}\n\n'
 
