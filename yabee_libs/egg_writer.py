@@ -171,7 +171,7 @@ class Group:
             if self.object.__class__ == bpy.types.Bone:
                 egg_str.append('%s<Joint> %s {\n' % ('  ' * level, eggSafeName(self.object.yabee_name)))
             else:
-                egg_str.append('%s<Group> %s {\n  <Collide> { Polyset keep descend }\n'\
+                egg_str.append('%s<Group> %s {\n  <Collide> { Polyset keep descend }\n' \
                                % ('  ' * level, eggSafeName(self.object.yabee_name)))
                 if self.object.type == 'MESH' \
                         and (self.object.data.shape_keys \
@@ -628,6 +628,7 @@ class EGGMeshObjectData(EGGBaseObjectData):
         """
         xyz = self.collect_vtx_xyz
         dxyz = self.collect_vtx_dxyz
+        normal = self.collect_vtx_normal
         rgba = self.collect_vtx_rgba
         uv = self.collect_vtx_uv
 
@@ -635,8 +636,6 @@ class EGGMeshObjectData(EGGBaseObjectData):
             self.map_vertex_to_loop = {self.obj_ref.data.loops[lidx].vertex_index: lidx
                                        for p in self.obj_ref.data.polygons for lidx in p.loop_indices}
             normal = self.collect_vtx_normal_from_loop
-        else:
-            normal = self.collect_vtx_normal
 
         vertices = []
         idx = 0
@@ -688,10 +687,12 @@ class EGGMeshObjectData(EGGBaseObjectData):
                         matIsFancyPBRNode = True
 
                         if matIsFancyPBRNode:
-                            # print(USED_TEXTURES)
                             # we need to find a couple of textures here
                             # we do need an empty for specular but it's added somewhere else
-                            nodeNames = {"Base Color": None, "Normal": None}
+                            nodeNames = {"Base Color": None,
+                                         "Normal": None,
+                                         "Roughness": None,
+                                         "Specular": None}
                             # let's crawl all links, find the ones connected to the Principled BSDF,
                             for link in material.node_tree.links:
                                 # if the link connects to the Principled BSDF node
@@ -702,7 +703,10 @@ class EGGMeshObjectData(EGGBaseObjectData):
                                         # we have to find the texture name here.
                                         nodeNames[link.to_socket.name] = textureNode.name
 
-                            for x in ['Base Color', 'Normal']:
+                            for x in ["Base Color",
+                                      "Normal",
+                                      "Roughness",
+                                      "Specular"]:
                                 tex = nodeNames[x]
                                 if tex:
                                     textures.append(tex)
@@ -798,16 +802,17 @@ class EGGMeshObjectData(EGGBaseObjectData):
         """
         tref = self.collect_poly_tref
         mref = self.collect_poly_mref
-        normal = self.collect_poly_normal
+        # normal = self.collect_poly_normal
         rgba = self.collect_poly_rgba
-        bface = self.collect_poly_bface
+        # bface = self.collect_poly_bface
         vertexref = self.collect_poly_vertexref
         polygons = []
         for f in self.obj_ref.data.polygons:
             attributes = []
             tref(f, attributes)
             mref(f, attributes)
-            normal(f, attributes)
+            # normal(f, attributes)
+            # bface(f, attributes)
             rgba(f, attributes)
             vertexref(f, attributes)
             poly = '<Polygon> {\n  %s \n}\n' % ('\n  '.join(attributes),)
