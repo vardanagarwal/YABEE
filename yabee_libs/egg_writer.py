@@ -669,7 +669,6 @@ class EGGMeshObjectData(EGGBaseObjectData):
         """
         global USED_TEXTURES, TEXTURE_PROCESSOR
         if TEXTURE_PROCESSOR in 'BAKE':
-
             # Store all texture references here. It is important that this is a list
             # so the texture order is preserved.
             textures = []
@@ -691,8 +690,8 @@ class EGGMeshObjectData(EGGBaseObjectData):
                             # we need to find a couple of textures here
                             # we do need an empty for specular but it's added somewhere else
                             nodeNames = {"Base Color": None,
-                                         "Normal": None,
                                          "Roughness": None,
+                                         "Normal": None,
                                          "Specular": None}
                             # let's crawl all links, find the ones connected to the Principled BSDF,
                             for link in material.node_tree.links:
@@ -705,8 +704,8 @@ class EGGMeshObjectData(EGGBaseObjectData):
                                         nodeNames[link.to_socket.name] = textureNode.name
 
                             for x in ["Base Color",
-                                      "Normal",
                                       "Roughness",
+                                      "Normal",
                                       "Specular"]:
                                 tex = nodeNames[x]
                                 if tex:
@@ -803,7 +802,7 @@ class EGGMeshObjectData(EGGBaseObjectData):
         """
         tref = self.collect_poly_tref
         mref = self.collect_poly_mref
-        normal = self.collect_poly_normal
+        # normal = self.collect_poly_normal
         rgba = self.collect_poly_rgba
         # bface = self.collect_poly_bface
         vertexref = self.collect_poly_vertexref
@@ -812,7 +811,7 @@ class EGGMeshObjectData(EGGBaseObjectData):
             attributes = []
             tref(f, attributes)
             mref(f, attributes)
-            normal(f, attributes)
+            # normal(f, attributes)
             # bface(f, attributes)
             rgba(f, attributes)
             vertexref(f, attributes)
