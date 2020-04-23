@@ -26,13 +26,6 @@ Principled Shader Support
 With the addition of the the Principled BSDF shader in Blender and the upcomming support for physically based materials 
 in Panda3D it was possible to extend YABEE to improve the workflow for artists when working in a PBR environment. 
 
-<img src="https://i.imgur.com/YaHcdbk.png" />
-<p style="font-size: small">Multimeshed object using multple (two) textures in Panda3D</p>
-
-<img src="https://i.imgur.com/iIZNZC8.png" />
-<p style="font-size: small">My multimeshed rigged character using multple textures in Panda3D 
-(Regular meshes) </p>
-
 <img src="https://i.imgur.com/v37q51J.png" />
 <p style="font-size: small">YABEE becomes more Blender-compatible: No special Nodegroup is needed anymore</p>
 
