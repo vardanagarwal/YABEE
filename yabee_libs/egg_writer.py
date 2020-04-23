@@ -560,7 +560,7 @@ class EGGMeshObjectData(EGGBaseObjectData):
             no = self.obj_ref.matrix_world.to_euler().to_matrix() @ self.obj_ref.data.vertices[v].normal
             # no = self.obj_ref.data.vertices[v].normal
             # no = self.obj_ref.data.loops[idx].normal
-            attributes.append('<Normal> { %f %f %f }' % no[:])
+            attributes.append('  <Normal> { %f %f %f }' % no[:])
 
         return attributes
 
@@ -632,10 +632,10 @@ class EGGMeshObjectData(EGGBaseObjectData):
         rgba = self.collect_vtx_rgba
         uv = self.collect_vtx_uv
 
-        if USE_LOOP_NORMALS and self.obj_ref.data.has_custom_normals:
+        """if USE_LOOP_NORMALS and self.obj_ref.data.has_custom_normals:
             self.map_vertex_to_loop = {self.obj_ref.data.loops[lidx].vertex_index: lidx
                                        for p in self.obj_ref.data.polygons for lidx in p.loop_indices}
-            normal = self.collect_vtx_normal_from_loop
+            normal = self.collect_vtx_normal_from_loop"""
 
         vertices = []
         idx = 0
@@ -646,9 +646,9 @@ class EGGMeshObjectData(EGGBaseObjectData):
                 attributes = []
                 xyz(v, attributes)
                 dxyz(v, attributes)
+                uv(v, idx, attributes)
                 normal(v, idx, attributes)
                 rgba(idx, f, attributes)
-                uv(v, idx, attributes)
                 str_attr = '\n'.join(attributes)
                 vtx = '\n<Vertex> %i {%s\n}' % (idx, str_attr)
                 vertices.append(vtx)
