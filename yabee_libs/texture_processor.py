@@ -66,7 +66,7 @@ class PbrTextures:
                                     textureNode = link.from_node
 
                                     if hasattr(textureNode, 'image'):
-                                        if textureNode.image is None:
+                                        if not textureNode.image:
                                             print("WARNING: Texture node has no image assigned!", obj.name,
                                                   link.to_socket.name)
 
@@ -79,7 +79,7 @@ class PbrTextures:
                                         elif (link.to_socket.name == 'Normal'
                                               and link.from_node.outputs[0].is_linked):
                                             scalars.append(('format', 'rgb'))
-                                            scalars.append(('envtype', 'modulate'))
+                                            scalars.append(('envtype', 'normal'))
 
                                         elif (link.to_socket.name == 'Roughness'
                                               and link.from_node.outputs[0].is_linked):
