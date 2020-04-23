@@ -472,6 +472,7 @@ class EGGMeshObjectData(EGGBaseObjectData):
         tangent_layers = []
         for idx, uvl in enumerate(self.obj_ref.data.uv_layers):
             tangents = []
+
             self.obj_ref.data.calc_tangents(uvmap=uvl.name)
 
             for loop in self.obj_ref.data.loops:
@@ -1547,13 +1548,12 @@ def write_out(fname, anims, from_actions, uv_img_as_tex, sep_anim, a_only,
                     if len(face.vertices) > 4:
                         obj.modifiers.new('triangulate_for_TBS', 'TRIANGULATE')
                         print('WARNING:TBS: Triangulate %s to avoid non tris/quads polygons' % obj.yabee_name)
-                        # TODO: bpy.context.scene.objects.active
-                        if hasattr(bpy.context.scene.objects, "active"):
-                            bpy.context.scene.objects.active = obj
-                            bpy.ops.object.modifier_apply(modifier='triangulate_for_TBS')
-                            break
-                        else:
-                            print('WARNING: bpy.context.scene.objects.active attribute not found')
+                        # in Blender 2.8
+                        # use bpy.context.view_layer.objects.active instead of bpy.context.scene.objects.active
+                        bpy.context.view_layer.objects.active = obj
+                        bpy.ops.object.modifier_apply(modifier='triangulate_for_TBS')
+                        break
+
         if APPLY_MOD:
             apply_modifiers(obj_list)
         reparenting_to_armature(obj_list)
