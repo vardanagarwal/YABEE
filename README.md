@@ -1,7 +1,7 @@
 ![logo](http://i.imgur.com/lVMTcfS.png)
 
 
-YABEE 14.5
+YABEE 14.6
 =====
 Renewed Egg exporter for Blender 2.8 and Panda3D
 
@@ -10,7 +10,7 @@ Exporting:
 - UV layers
 - Materials 
 - Vertex colors
-- Textures (Diffuse textures and Normal maps)
+- Textures (Diffuse, Normal, Roughness)
 - Armature (skeleton) animation
 - ShapeKeys (morph) animation
 - Non-cyclic NURBS Curves
@@ -19,7 +19,6 @@ Missing features/TODO
 =====
 - Properties/tags
 - Texture baking via Cycles
-- Non-Shader Mode for Materials & Textures
 
 Principled Shader Support
 =====
