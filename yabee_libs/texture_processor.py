@@ -50,7 +50,9 @@ class PbrTextures:
                         handled.add(mat)
 
                         nodeNames = {"Base Color": None,
-                                     "Normal": None}
+                                     "Normal": None,
+                                     "Roughness": None,
+                                     "Specular": None}
                         # let's crawl all links, find the ones connected to the PandaPBRNode,
                         # find the connected textures, use them.
                         for link in mat.node_tree.links:
@@ -64,7 +66,7 @@ class PbrTextures:
                                     textureNode = link.from_node
 
                                     if hasattr(textureNode, 'image'):
-                                        if textureNode.image == None:
+                                        if not textureNode.image:
                                             print("WARNING: Texture node has no image assigned!", obj.name,
                                                   link.to_socket.name)
 
@@ -72,11 +74,16 @@ class PbrTextures:
 
                                         if (link.to_socket.name == 'Base Color'
                                                 and link.to_node.inputs[0].is_linked):
-                                            scalars.append(('envtype', 'MODULATE'))
+                                            scalars.append(('envtype', 'modulate'))
 
                                         elif (link.to_socket.name == 'Normal'
                                               and link.from_node.outputs[0].is_linked):
-                                            scalars.append(('envtype', 'NORMAL'))
+                                            scalars.append(('format', 'rgb'))
+                                            scalars.append(('envtype', 'normal'))
+
+                                        elif (link.to_socket.name == 'Roughness'
+                                              and link.from_node.outputs[0].is_linked):
+                                            scalars.append(('format', 'rgb'))
 
                                         # Make unique named Image Texture node by assigning the texture name
                                         # so we can use multiple textures for multimeshed object
@@ -114,8 +121,8 @@ class PbrTextures:
                                         transform = []
 
                                         # if(textureNode.use_mipmap): #todo: find the use_mipmap flag
-                                        scalars.append(('minfilter', 'LINEAR_MIPMAP_LINEAR'))
-                                        scalars.append(('magfilter', 'LINEAR_MIPMAP_LINEAR'))
+                                        # scalars.append(('minfilter', 'LINEAR_MIPMAP_LINEAR'))
+                                        # scalars.append(('magfilter', 'LINEAR_MIPMAP_LINEAR'))
 
                                         # Process wrap modes.
                                         if textureNode.extension == 'EXTEND':
@@ -129,7 +136,8 @@ class PbrTextures:
                                             scalars.append(('bordera', '1'))
 
                                         elif textureNode.extension in ('REPEAT', 'CHECKER'):
-                                            scalars.append(('wrap', 'REPEAT'))
+                                            scalars.append(('wrapu', 'repeat'))
+                                            scalars.append(('wrapv', 'repeat'))
 
                                         # Process coordinate mapping using a matrix.
                                         mappings = (

@@ -171,7 +171,7 @@ class Group:
             if self.object.__class__ == bpy.types.Bone:
                 egg_str.append('%s<Joint> %s {\n' % ('  ' * level, eggSafeName(self.object.yabee_name)))
             else:
-                egg_str.append('%s<Group> %s {\n  <Collide> { Polyset keep descend }\n'\
+                egg_str.append('%s<Group> %s {\n  <Collide> { Polyset keep descend }\n' \
                                % ('  ' * level, eggSafeName(self.object.yabee_name)))
                 if self.object.type == 'MESH' \
                         and (self.object.data.shape_keys \
@@ -472,6 +472,7 @@ class EGGMeshObjectData(EGGBaseObjectData):
         tangent_layers = []
         for idx, uvl in enumerate(self.obj_ref.data.uv_layers):
             tangents = []
+
             self.obj_ref.data.calc_tangents(uvmap=uvl.name)
 
             for loop in self.obj_ref.data.loops:
@@ -560,7 +561,7 @@ class EGGMeshObjectData(EGGBaseObjectData):
             no = self.obj_ref.matrix_world.to_euler().to_matrix() @ self.obj_ref.data.vertices[v].normal
             # no = self.obj_ref.data.vertices[v].normal
             # no = self.obj_ref.data.loops[idx].normal
-            attributes.append('<Normal> { %f %f %f }' % no[:])
+            attributes.append('  <Normal> { %f %f %f }' % no[:])
 
         return attributes
 
@@ -628,15 +629,14 @@ class EGGMeshObjectData(EGGBaseObjectData):
         """
         xyz = self.collect_vtx_xyz
         dxyz = self.collect_vtx_dxyz
+        normal = self.collect_vtx_normal
         rgba = self.collect_vtx_rgba
         uv = self.collect_vtx_uv
 
-        if USE_LOOP_NORMALS and self.obj_ref.data.has_custom_normals:
+        """if USE_LOOP_NORMALS and self.obj_ref.data.has_custom_normals:
             self.map_vertex_to_loop = {self.obj_ref.data.loops[lidx].vertex_index: lidx
                                        for p in self.obj_ref.data.polygons for lidx in p.loop_indices}
-            normal = self.collect_vtx_normal_from_loop
-        else:
-            normal = self.collect_vtx_normal
+            normal = self.collect_vtx_normal_from_loop"""
 
         vertices = []
         idx = 0
@@ -647,9 +647,9 @@ class EGGMeshObjectData(EGGBaseObjectData):
                 attributes = []
                 xyz(v, attributes)
                 dxyz(v, attributes)
+                uv(v, idx, attributes)
                 normal(v, idx, attributes)
                 rgba(idx, f, attributes)
-                uv(v, idx, attributes)
                 str_attr = '\n'.join(attributes)
                 vtx = '\n<Vertex> %i {%s\n}' % (idx, str_attr)
                 vertices.append(vtx)
@@ -669,7 +669,6 @@ class EGGMeshObjectData(EGGBaseObjectData):
         """
         global USED_TEXTURES, TEXTURE_PROCESSOR
         if TEXTURE_PROCESSOR in 'BAKE':
-
             # Store all texture references here. It is important that this is a list
             # so the texture order is preserved.
             textures = []
@@ -688,10 +687,12 @@ class EGGMeshObjectData(EGGBaseObjectData):
                         matIsFancyPBRNode = True
 
                         if matIsFancyPBRNode:
-                            # print(USED_TEXTURES)
                             # we need to find a couple of textures here
                             # we do need an empty for specular but it's added somewhere else
-                            nodeNames = {"Base Color": None, "Normal": None}
+                            nodeNames = {"Base Color": None,
+                                         "Roughness": None,
+                                         "Normal": None,
+                                         "Specular": None}
                             # let's crawl all links, find the ones connected to the Principled BSDF,
                             for link in material.node_tree.links:
                                 # if the link connects to the Principled BSDF node
@@ -702,7 +703,10 @@ class EGGMeshObjectData(EGGBaseObjectData):
                                         # we have to find the texture name here.
                                         nodeNames[link.to_socket.name] = textureNode.name
 
-                            for x in ['Base Color', 'Normal']:
+                            for x in ["Base Color",
+                                      "Roughness",
+                                      "Normal",
+                                      "Specular"]:
                                 tex = nodeNames[x]
                                 if tex:
                                     textures.append(tex)
@@ -800,7 +804,7 @@ class EGGMeshObjectData(EGGBaseObjectData):
         mref = self.collect_poly_mref
         normal = self.collect_poly_normal
         rgba = self.collect_poly_rgba
-        bface = self.collect_poly_bface
+        # bface = self.collect_poly_bface
         vertexref = self.collect_poly_vertexref
         polygons = []
         for f in self.obj_ref.data.polygons:
@@ -808,6 +812,7 @@ class EGGMeshObjectData(EGGBaseObjectData):
             tref(f, attributes)
             mref(f, attributes)
             normal(f, attributes)
+            # bface(f, attributes)
             rgba(f, attributes)
             vertexref(f, attributes)
             poly = '<Polygon> {\n  %s \n}\n' % ('\n  '.join(attributes),)
@@ -1159,25 +1164,36 @@ def get_egg_materials_str(object_names=None):
             if matFancyType == 0:
                 if nodeTree.links[0].to_node.name == "Principled BSDF":
                     principled_bsdf = nodeTree.links[0].to_node
-
-                    basecol = list(principled_bsdf.inputs["Base Color"].default_value)
-                    metallic = principled_bsdf.inputs["Metallic"].default_value
-                    roughness = principled_bsdf.inputs["Roughness"].default_value
+                    if not principled_bsdf.inputs["Base Color"].is_linked:
+                        basecol = list(principled_bsdf.inputs["Base Color"].default_value)
+                    else:
+                        basecol = [1, 1, 1, 1]
+                    if not principled_bsdf.inputs["Specular"].is_linked:
+                        specular = principled_bsdf.inputs["Specular"].default_value
+                    else:
+                        specular = 1
+                    if not principled_bsdf.inputs["Metallic"].is_linked:
+                        metallic = principled_bsdf.inputs["Metallic"].default_value
+                    else:
+                        metallic = 1
+                    if not principled_bsdf.inputs["Roughness"].is_linked:
+                        roughness = principled_bsdf.inputs["Roughness"].default_value
+                    else:
+                        roughness = 1
 
                     base_r = basecol[0]
                     base_g = basecol[1]
                     base_b = basecol[2]
                     base_a = basecol[3]
 
-                    mat_str += '  <Scalar> baser { %s }\n' % STRF(base_r)
-                    mat_str += '  <Scalar> baseg { %s }\n' % STRF(base_g)
-                    mat_str += '  <Scalar> baseb { %s }\n' % STRF(base_b)
-                    mat_str += '  <Scalar> basea { %s }\n' % STRF(base_a)
-
-                    # ("DEFAULT", "EMISSIVE", "CLEARCOAT", "TRANSPARENT","SKIN", "FOLIAGE")
-                    mat_str += '  <Scalar> roughness { %s }\n' % STRF(roughness)
-                    mat_str += '  <Scalar> metallic { %s }\n' % STRF(metallic)
-                    mat_str += '  <Scalar> local { %s }\n' % STRF(0.0)
+                    mat_str += '  <Scalar> baser { %s }\n' % str(base_r)
+                    mat_str += '  <Scalar> baseg { %s }\n' % str(base_g)
+                    mat_str += '  <Scalar> baseb { %s }\n' % str(base_b)
+                    mat_str += '  <Scalar> basea { %s }\n' % str(base_a)
+                    mat_str += '  <Scalar> shininess { %s }\n' % str(specular)
+                    mat_str += '  <Scalar> roughness { %s }\n' % str(roughness)
+                    mat_str += '  <Scalar> metallic { %s }\n' % str(metallic)
+                    mat_str += '  <Scalar> local { %s }\n' % str(0)
 
                 elif nodeTree.links[0].to_node.name == 'Material Output':
                     print("INFO: {} is using for!".format(nodeTree.links[0].to_node.name)),
@@ -1185,24 +1201,47 @@ def get_egg_materials_str(object_names=None):
                     for node in bpy.data.materials[0].node_tree.nodes:
                         if node.name == "Principled BSDF":
                             principled_bsdf = node
-                            basecol = list(principled_bsdf.inputs["Base Color"].default_value)
-                            metallic = principled_bsdf.inputs["Metallic"].default_value
-                            roughness = principled_bsdf.inputs["Roughness"].default_value
+                            if not principled_bsdf.inputs["Base Color"].is_linked:
+                                basecol = list(principled_bsdf.inputs["Base Color"].default_value)
+                            else:
+                                basecol = [1, 1, 1, 1]
+                            if not principled_bsdf.inputs["Specular"].is_linked:
+                                specular = principled_bsdf.inputs["Specular"].default_value
+                            else:
+                                specular = 1
+                            if not principled_bsdf.inputs["Metallic"].is_linked:
+                                metallic = principled_bsdf.inputs["Metallic"].default_value
+                            else:
+                                metallic = 1
+                            if not principled_bsdf.inputs["Roughness"].is_linked:
+                                roughness = principled_bsdf.inputs["Roughness"].default_value
+                            else:
+                                roughness = 1
 
                             base_r = basecol[0]
                             base_g = basecol[1]
                             base_b = basecol[2]
                             base_a = basecol[3]
 
-                            mat_str += '  <Scalar> baser { %s }\n' % STRF(base_r)
-                            mat_str += '  <Scalar> baseg { %s }\n' % STRF(base_g)
-                            mat_str += '  <Scalar> baseb { %s }\n' % STRF(base_b)
-                            mat_str += '  <Scalar> basea { %s }\n' % STRF(base_a)
+                            mat_str += '  <Scalar> baser { %s }\n' % str(base_r)
+                            mat_str += '  <Scalar> baseg { %s }\n' % str(base_g)
+                            mat_str += '  <Scalar> baseb { %s }\n' % str(base_b)
+                            mat_str += '  <Scalar> basea { %s }\n' % str(base_a)
+                            mat_str += '  <Scalar> shininess { %s }\n' % str(specular)
+                            mat_str += '  <Scalar> roughness { %s }\n' % str(roughness)
+                            mat_str += '  <Scalar> metallic { %s }\n' % str(metallic)
+                            mat_str += '  <Scalar> local { %s }\n' % str(0)
 
-                            # ("DEFAULT", "EMISSIVE", "CLEARCOAT", "TRANSPARENT","SKIN", "FOLIAGE")
-                            mat_str += '  <Scalar> roughness { %s }\n' % STRF(roughness)
-                            mat_str += '  <Scalar> metallic { %s }\n' % STRF(metallic)
-                            mat_str += '  <Scalar> local { %s }\n' % STRF(0.0)
+                else:
+                    # TODO: Use if no input is active
+                    mat_str += '  <Scalar> baser { 1 }\n'
+                    mat_str += '  <Scalar> baseg { 1 }\n'
+                    mat_str += '  <Scalar> baseb { 1 }\n'
+                    mat_str += '  <Scalar> basea { 1 }\n'
+                    mat_str += '  <Scalar> shininess { 1 }\n'
+                    mat_str += '  <Scalar> roughness { 1 }\n'
+                    mat_str += '  <Scalar> metallic { 1 }\n'
+                    mat_str += '  <Scalar> local { 0 }\n'
 
         if matIsFancyPBRNode is False:
             print("INFO: Non-Shader Mode is using for!")
@@ -1211,27 +1250,19 @@ def get_egg_materials_str(object_names=None):
                     mat = bpy.data.materials[m_val]
                     if mat.use_nodes is False:
                         color = mat.diffuse_color
-                        metallic = 0
                         basecol = list(color)
                         base_r = basecol[0]
                         base_g = basecol[1]
                         base_b = basecol[2]
                         # diff_a = diffcol[3]
 
-                        mat_str += '  <Scalar> baser { %s }\n' % STRF(base_r)
-                        mat_str += '  <Scalar> baseg { %s }\n' % STRF(base_g)
-                        mat_str += '  <Scalar> baseb { %s }\n' % STRF(base_b)
+                        mat_str += '  <Scalar> baser { %s }\n' % str(base_r)
+                        mat_str += '  <Scalar> baseg { %s }\n' % str(base_g)
+                        mat_str += '  <Scalar> baseb { %s }\n' % str(base_b)
                         # mat_str += '  <Scalar> basea { %s }\n' % STRF(base_a)
-
-                        # ("DEFAULT", "EMISSIVE", "CLEARCOAT", "TRANSPARENT","SKIN", "FOLIAGE")
-                        mat_str += '  <Scalar> roughness { %s }\n' % STRF(mat.roughness)
-                        mat_str += '  <Scalar> metallic { %s }\n' % STRF(mat.metallic)
-                        mat_str += '  <Scalar> local { %s }\n' % STRF(0.0)
-
-        if TEXTURE_PROCESSOR == 'BAKE' and mat.use_nodes:
-            mat_str += '  <Scalar> diffr { 1.0 }\n'
-            mat_str += '  <Scalar> diffg { 1.0 }\n'
-            mat_str += '  <Scalar> diffb { 1.0 }\n'
+                        mat_str += '  <Scalar> roughness { %s }\n' % str(mat.roughness)
+                        mat_str += '  <Scalar> metallic { %s }\n' % str(mat.metallic)
+                        mat_str += '  <Scalar> local { %s }\n' % str(0)
 
         mat_str += '}\n\n'
 
@@ -1516,9 +1547,12 @@ def write_out(fname, anims, from_actions, uv_img_as_tex, sep_anim, a_only,
                     if len(face.vertices) > 4:
                         obj.modifiers.new('triangulate_for_TBS', 'TRIANGULATE')
                         print('WARNING:TBS: Triangulate %s to avoid non tris/quads polygons' % obj.yabee_name)
-                        bpy.context.scene.objects.active = obj
+                        # in Blender 2.8
+                        # use bpy.context.view_layer.objects.active instead of bpy.context.scene.objects.active
+                        bpy.context.view_layer.objects.active = obj
                         bpy.ops.object.modifier_apply(modifier='triangulate_for_TBS')
                         break
+
         if APPLY_MOD:
             apply_modifiers(obj_list)
         reparenting_to_armature(obj_list)

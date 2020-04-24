@@ -1,7 +1,7 @@
 ![logo](http://i.imgur.com/lVMTcfS.png)
 
 
-YABEE 14.4
+YABEE 14.5
 =====
 Renewed Egg exporter for Blender 2.8 and Panda3D
 
@@ -26,15 +26,11 @@ Principled Shader Support
 With the addition of the the Principled BSDF shader in Blender and the upcomming support for physically based materials 
 in Panda3D it was possible to extend YABEE to improve the workflow for artists when working in a PBR environment. 
 
-<img src="https://i.imgur.com/YaHcdbk.png" />
-<p style="font-size: small">Multimeshed object using multple (two) textures in Panda3D</p>
-
-<img src="https://i.imgur.com/iIZNZC8.png" />
-<p style="font-size: small">My multimeshed rigged character using multple textures in Panda3D 
-(Regular meshes) </p>
-
 <img src="https://i.imgur.com/v37q51J.png" />
 <p style="font-size: small">YABEE becomes more Blender-compatible: No special Nodegroup is needed anymore</p>
+
+<img src="https://i.imgur.com/7hEFhqr.png" />
+<p style="font-size: small">Normal mapping Example with TBS: Blender/Panda</p>
 
 To use it, you have to create a material for your mesh, set up the Principled BSDF shader 
 by connecting at least the Image Texture shader and optionally UV Map.

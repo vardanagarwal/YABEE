@@ -66,7 +66,7 @@ class YABEEProperty(bpy.types.PropertyGroup):
     opt_tex_proc: StringProperty(
         name="Tex. processing",
         description="Export all textures as MODULATE or bake texture layers",
-        default='BAKE',
+        default='NO',
     )
 
     opt_bake_diffuse: PointerProperty(type=EGGBakeProperty)
@@ -82,7 +82,7 @@ class YABEEProperty(bpy.types.PropertyGroup):
         items=(('PANDA', "Panda", "Use egg-trans to calculate TBS (Need installed Panda3D)."),
                ('BLENDER', "Blender", "Use Blender to calculate TBS"),
                ('NO', "No", "Do not generate TBS.")),
-        default='NO',
+        default='BLENDER',
     )
 
     opt_export_uv_as_texture: BoolProperty(
