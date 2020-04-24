@@ -802,7 +802,7 @@ class EGGMeshObjectData(EGGBaseObjectData):
         """
         tref = self.collect_poly_tref
         mref = self.collect_poly_mref
-        normal = self.collect_poly_normal
+        # normal = self.collect_poly_normal
         rgba = self.collect_poly_rgba
         # bface = self.collect_poly_bface
         vertexref = self.collect_poly_vertexref
@@ -811,7 +811,7 @@ class EGGMeshObjectData(EGGBaseObjectData):
             attributes = []
             tref(f, attributes)
             mref(f, attributes)
-            normal(f, attributes)
+            # normal(f, attributes)
             # bface(f, attributes)
             rgba(f, attributes)
             vertexref(f, attributes)
@@ -1162,86 +1162,40 @@ def get_egg_materials_str(object_names=None):
 
         if matIsFancyPBRNode:
             if matFancyType == 0:
-                if nodeTree.links[0].to_node.name == "Principled BSDF":
-                    principled_bsdf = nodeTree.links[0].to_node
-                    if not principled_bsdf.inputs["Base Color"].is_linked:
-                        basecol = list(principled_bsdf.inputs["Base Color"].default_value)
-                    else:
-                        basecol = [1, 1, 1, 1]
-                    if not principled_bsdf.inputs["Specular"].is_linked:
-                        specular = principled_bsdf.inputs["Specular"].default_value
-                    else:
-                        specular = 1
-                    if not principled_bsdf.inputs["Metallic"].is_linked:
-                        metallic = principled_bsdf.inputs["Metallic"].default_value
-                    else:
-                        metallic = 1
-                    if not principled_bsdf.inputs["Roughness"].is_linked:
-                        roughness = principled_bsdf.inputs["Roughness"].default_value
-                    else:
-                        roughness = 1
+                objects = bpy.context.selected_objects
+                for node in bpy.data.materials[0].node_tree.nodes:
+                    if node.name == "Principled BSDF":
+                        principled_bsdf = node
+                        if not principled_bsdf.inputs["Base Color"].is_linked:
+                            basecol = list(principled_bsdf.inputs["Base Color"].default_value)
+                        else:
+                            basecol = [1, 1, 1, 1]
+                        if not principled_bsdf.inputs["Specular"].is_linked:
+                            specular = principled_bsdf.inputs["Specular"].default_value
+                        else:
+                            specular = 1
+                        if not principled_bsdf.inputs["Metallic"].is_linked:
+                            metallic = principled_bsdf.inputs["Metallic"].default_value
+                        else:
+                            metallic = 1
+                        if not principled_bsdf.inputs["Roughness"].is_linked:
+                            roughness = principled_bsdf.inputs["Roughness"].default_value
+                        else:
+                            roughness = 1
 
-                    base_r = basecol[0]
-                    base_g = basecol[1]
-                    base_b = basecol[2]
-                    base_a = basecol[3]
+                        base_r = basecol[0]
+                        base_g = basecol[1]
+                        base_b = basecol[2]
+                        base_a = basecol[3]
 
-                    mat_str += '  <Scalar> baser { %s }\n' % str(base_r)
-                    mat_str += '  <Scalar> baseg { %s }\n' % str(base_g)
-                    mat_str += '  <Scalar> baseb { %s }\n' % str(base_b)
-                    mat_str += '  <Scalar> basea { %s }\n' % str(base_a)
-                    mat_str += '  <Scalar> shininess { %s }\n' % str(specular)
-                    mat_str += '  <Scalar> roughness { %s }\n' % str(roughness)
-                    mat_str += '  <Scalar> metallic { %s }\n' % str(metallic)
-                    mat_str += '  <Scalar> local { %s }\n' % str(0)
-
-                elif nodeTree.links[0].to_node.name == 'Material Output':
-                    print("INFO: {} is using for!".format(nodeTree.links[0].to_node.name)),
-                    objects = bpy.context.selected_objects
-                    for node in bpy.data.materials[0].node_tree.nodes:
-                        if node.name == "Principled BSDF":
-                            principled_bsdf = node
-                            if not principled_bsdf.inputs["Base Color"].is_linked:
-                                basecol = list(principled_bsdf.inputs["Base Color"].default_value)
-                            else:
-                                basecol = [1, 1, 1, 1]
-                            if not principled_bsdf.inputs["Specular"].is_linked:
-                                specular = principled_bsdf.inputs["Specular"].default_value
-                            else:
-                                specular = 1
-                            if not principled_bsdf.inputs["Metallic"].is_linked:
-                                metallic = principled_bsdf.inputs["Metallic"].default_value
-                            else:
-                                metallic = 1
-                            if not principled_bsdf.inputs["Roughness"].is_linked:
-                                roughness = principled_bsdf.inputs["Roughness"].default_value
-                            else:
-                                roughness = 1
-
-                            base_r = basecol[0]
-                            base_g = basecol[1]
-                            base_b = basecol[2]
-                            base_a = basecol[3]
-
-                            mat_str += '  <Scalar> baser { %s }\n' % str(base_r)
-                            mat_str += '  <Scalar> baseg { %s }\n' % str(base_g)
-                            mat_str += '  <Scalar> baseb { %s }\n' % str(base_b)
-                            mat_str += '  <Scalar> basea { %s }\n' % str(base_a)
-                            mat_str += '  <Scalar> shininess { %s }\n' % str(specular)
-                            mat_str += '  <Scalar> roughness { %s }\n' % str(roughness)
-                            mat_str += '  <Scalar> metallic { %s }\n' % str(metallic)
-                            mat_str += '  <Scalar> local { %s }\n' % str(0)
-
-                else:
-                    # TODO: Use if no input is active
-                    mat_str += '  <Scalar> baser { 1 }\n'
-                    mat_str += '  <Scalar> baseg { 1 }\n'
-                    mat_str += '  <Scalar> baseb { 1 }\n'
-                    mat_str += '  <Scalar> basea { 1 }\n'
-                    mat_str += '  <Scalar> shininess { 1 }\n'
-                    mat_str += '  <Scalar> roughness { 1 }\n'
-                    mat_str += '  <Scalar> metallic { 1 }\n'
-                    mat_str += '  <Scalar> local { 0 }\n'
+                        mat_str += '  <Scalar> baser { %s }\n' % str(base_r)
+                        mat_str += '  <Scalar> baseg { %s }\n' % str(base_g)
+                        mat_str += '  <Scalar> baseb { %s }\n' % str(base_b)
+                        mat_str += '  <Scalar> basea { %s }\n' % str(base_a)
+                        mat_str += '  <Scalar> shininess { %s }\n' % str(specular)
+                        mat_str += '  <Scalar> roughness { %s }\n' % str(roughness)
+                        mat_str += '  <Scalar> metallic { %s }\n' % str(metallic)
+                        mat_str += '  <Scalar> local { %s }\n' % str(0)
 
         if matIsFancyPBRNode is False:
             print("INFO: Non-Shader Mode is using for!")
