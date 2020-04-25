@@ -802,7 +802,7 @@ class EGGMeshObjectData(EGGBaseObjectData):
         """
         tref = self.collect_poly_tref
         mref = self.collect_poly_mref
-        # normal = self.collect_poly_normal
+        normal = self.collect_poly_normal
         rgba = self.collect_poly_rgba
         # bface = self.collect_poly_bface
         vertexref = self.collect_poly_vertexref
@@ -811,7 +811,7 @@ class EGGMeshObjectData(EGGBaseObjectData):
             attributes = []
             tref(f, attributes)
             mref(f, attributes)
-            # normal(f, attributes)
+            normal(f, attributes)
             # bface(f, attributes)
             rgba(f, attributes)
             vertexref(f, attributes)
