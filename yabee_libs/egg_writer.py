@@ -633,10 +633,11 @@ class EGGMeshObjectData(EGGBaseObjectData):
         rgba = self.collect_vtx_rgba
         uv = self.collect_vtx_uv
 
-        """if USE_LOOP_NORMALS and self.obj_ref.data.has_custom_normals:
+        if USE_LOOP_NORMALS and self.obj_ref.data.has_custom_normals:
+            print("INFO: Custom normals detected")
             self.map_vertex_to_loop = {self.obj_ref.data.loops[lidx].vertex_index: lidx
                                        for p in self.obj_ref.data.polygons for lidx in p.loop_indices}
-            normal = self.collect_vtx_normal_from_loop"""
+            normal = self.collect_vtx_normal_from_loop
 
         vertices = []
         idx = 0
@@ -1170,6 +1171,10 @@ def get_egg_materials_str(object_names=None):
                             basecol = list(principled_bsdf.inputs["Base Color"].default_value)
                         else:
                             basecol = [1, 1, 1, 1]
+                        if not principled_bsdf.inputs["Emission"].is_linked:
+                            emission = list(principled_bsdf.inputs["Emission"].default_value)
+                        else:
+                            emission = [1, 1, 1, 1]
                         if not principled_bsdf.inputs["Specular"].is_linked:
                             specular = principled_bsdf.inputs["Specular"].default_value
                         else:
@@ -1182,19 +1187,33 @@ def get_egg_materials_str(object_names=None):
                             roughness = principled_bsdf.inputs["Roughness"].default_value
                         else:
                             roughness = 1
+                        if not principled_bsdf.inputs["IOR"].is_linked:
+                            ior = principled_bsdf.inputs["IOR"].default_value
+                        else:
+                            ior = 1.5
 
                         base_r = basecol[0]
                         base_g = basecol[1]
                         base_b = basecol[2]
                         base_a = basecol[3]
 
+                        emit_r = emission[0]
+                        emit_g = emission[1]
+                        emit_b = emission[2]
+                        emit_a = emission[3]
+
                         mat_str += '  <Scalar> baser { %s }\n' % str(base_r)
                         mat_str += '  <Scalar> baseg { %s }\n' % str(base_g)
                         mat_str += '  <Scalar> baseb { %s }\n' % str(base_b)
                         mat_str += '  <Scalar> basea { %s }\n' % str(base_a)
+                        mat_str += '  <Scalar> emitr { %s }\n' % str(emit_r)
+                        mat_str += '  <Scalar> emitg { %s }\n' % str(emit_g)
+                        mat_str += '  <Scalar> emitb { %s }\n' % str(emit_b)
+                        mat_str += '  <Scalar> emita { %s }\n' % str(emit_a)
                         mat_str += '  <Scalar> shininess { %s }\n' % str(specular)
                         mat_str += '  <Scalar> roughness { %s }\n' % str(roughness)
                         mat_str += '  <Scalar> metallic { %s }\n' % str(metallic)
+                        mat_str += '  <Scalar> ior { %s }\n' % str(ior)
                         mat_str += '  <Scalar> local { %s }\n' % str(0)
 
         if matIsFancyPBRNode is False:
