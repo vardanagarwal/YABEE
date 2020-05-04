@@ -1,7 +1,7 @@
 ![logo](http://i.imgur.com/lVMTcfS.png)
 
 
-YABEE 14.6
+YABEE 14.7
 =====
 Renewed Egg exporter for Blender 2.8 and Panda3D
 

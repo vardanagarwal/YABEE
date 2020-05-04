@@ -1,3 +1,7 @@
+------------- Release 14.7 ---------------
+* Added Emission, IOR material properties, linear filtering for texture.
+* Various bugfixes.
+
 ------------- Release 14.6 ---------------
 * Various bugfixes.
 
