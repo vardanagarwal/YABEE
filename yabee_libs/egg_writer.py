@@ -28,6 +28,7 @@ TEXTURE_PROCESSOR = None
 BAKE_LAYERS = None
 MERGE_ACTOR_MESH = None
 APPLY_MOD = None
+APPLY_COLL_TAG = None
 PVIEW = True
 EXPORT_PBS = False
 FORCE_EXPORT_VERTEX_COLORS = False
@@ -171,8 +172,12 @@ class Group:
             if self.object.__class__ == bpy.types.Bone:
                 egg_str.append('%s<Joint> %s {\n' % ('  ' * level, eggSafeName(self.object.yabee_name)))
             else:
-                egg_str.append('%s<Group> %s {\n  <Collide> { Polyset keep descend }\n' \
-                               % ('  ' * level, eggSafeName(self.object.yabee_name)))
+                if APPLY_COLL_TAG:
+                    egg_str.append('%s<Group> %s {\n  <Collide> { Polyset keep descend }\n' \
+                                   % ('  ' * level, eggSafeName(self.object.yabee_name)))
+                if not APPLY_COLL_TAG:
+                    egg_str.append('%s<Group> %s {\n' % ('  ' * level, eggSafeName(self.object.yabee_name)))
+
                 if self.object.type == 'MESH' \
                         and (self.object.data.shape_keys \
                              and len(self.object.data.shape_keys.key_blocks) > 1):
@@ -1402,11 +1407,11 @@ def generate_shadow_uvs():
 # -----------------------------------------------------------------------
 def write_out(fname, anims, from_actions, uv_img_as_tex, sep_anim, a_only,
               copy_tex, t_path, tbs, tex_processor, b_layers,
-              m_actor, apply_m, pview, loop_normals, export_pbs, force_export_vertex_colors, objects=None):
+              m_actor, apply_m, apply_coll_tag, pview, loop_normals, export_pbs, force_export_vertex_colors, objects=None):
     global FILE_PATH, ANIMATIONS, ANIMS_FROM_ACTIONS, EXPORT_UV_IMAGE_AS_TEXTURE, \
         COPY_TEX_FILES, TEX_PATH, SEPARATE_ANIM_FILE, ANIM_ONLY, \
         STRF, CALC_TBS, TEXTURE_PROCESSOR, BAKE_LAYERS, \
-        MERGE_ACTOR_MESH, APPLY_MOD, PVIEW, USED_MATERIALS, USED_TEXTURES, \
+        MERGE_ACTOR_MESH, APPLY_MOD, APPLY_COLL_TAG, PVIEW, USED_MATERIALS, USED_TEXTURES, \
         USE_LOOP_NORMALS, EXPORT_PBS, FORCE_EXPORT_VERTEX_COLORS
     importlib.reload(sys.modules[lib_name + '.texture_processor'])
     importlib.reload(sys.modules[lib_name + '.utils'])
@@ -1425,6 +1430,7 @@ def write_out(fname, anims, from_actions, uv_img_as_tex, sep_anim, a_only,
     BAKE_LAYERS = b_layers
     MERGE_ACTOR_MESH = m_actor
     APPLY_MOD = apply_m
+    APPLY_COLL_TAG = apply_coll_tag
     PVIEW = pview
     USE_LOOP_NORMALS = loop_normals
     EXPORT_PBS = export_pbs
@@ -1652,13 +1658,13 @@ def write_out(fname, anims, from_actions, uv_img_as_tex, sep_anim, a_only,
 
 def write_out_test(fname, anims, uv_img_as_tex, sep_anim, a_only, copy_tex,
                    t_path, tbs, tex_processor, b_layers,
-                   m_actor, apply_m, pview):
+                   m_actor, apply_m, apply_coll_tag, pview):
     import profile
     import pstats
-    wo = "write_out('%s', %s, %s, %s, %s, '%s', %s, '%s', '%s', %s, %s, %s, %s)" % \
+    wo = "write_out('%s', %s, %s, %s, %s, '%s', %s, '%s', '%s', %s, %s, %s, %s, %s)" % \
          (fname, anims, uv_img_as_tex, sep_anim, a_only, copy_tex,
           t_path, tbs, tex_processor, b_layers,
-          m_actor, apply_m, pview)
+          m_actor, apply_m, apply_coll_tag, pview)
     wo = wo.replace('\\', '\\\\')
     profile.runctx(wo, globals(), {}, 'main_prof')
     stats = pstats.Stats('main_prof')

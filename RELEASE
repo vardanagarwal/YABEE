@@ -1,3 +1,7 @@
+------------- Release 14.8 ---------------
+* Added option "Apply Collide tag"
+* Various bugfixes.
+
 ------------- Release 14.7 ---------------
 * Added Emission, IOR material properties, linear filtering for texture.
 * Various bugfixes.

@@ -133,6 +133,12 @@ class YABEEProperty(bpy.types.PropertyGroup):
         default=True,
     )
 
+    opt_apply_collide_tag: BoolProperty(
+        name="Apply Collide tag",
+        description="Add Collide tag on exported objects",
+        default=False,
+    )
+
     opt_pview: BoolProperty(
         name="Pview",
         description="Run pview after exporting",
@@ -215,6 +221,7 @@ class YABEEProperty(bpy.types.PropertyGroup):
                 layout.row().prop(self, 'opt_copy_tex_files')
             layout.row().prop(self, 'opt_merge_actor')
             layout.row().prop(self, 'opt_apply_modifiers')
+            layout.row().prop(self, 'opt_apply_collide_tag')
             layout.row().prop(self, 'opt_pview')
             layout.row().prop(self, 'opt_use_loop_normals')
 
@@ -277,6 +284,7 @@ class YABEEProperty(bpy.types.PropertyGroup):
         self.opt_tex_path = './tex'
         self.opt_merge_actor = True
         self.opt_apply_modifiers = True
+        self.opt_apply_collide_tag = False
         self.opt_pview = False
         self.opt_use_loop_normals = False
         self.opt_export_pbs = False
@@ -386,6 +394,7 @@ class ExportPanda3DEGG(bpy.types.Operator, ExportHelper):
                                       sett.get_bake_dict(),
                                       sett.opt_merge_actor,
                                       sett.opt_apply_modifiers,
+                                      sett.opt_apply_collide_tag,
                                       sett.opt_pview,
                                       sett.opt_use_loop_normals,
                                       sett.opt_export_pbs,
