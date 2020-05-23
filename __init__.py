@@ -123,7 +123,7 @@ class YABEEProperty(bpy.types.PropertyGroup):
 
     opt_autoselect: BoolProperty(
         name="Automatic selection",
-        description="Automatically select all objects in a scene",
+        description="Automatically select all objects in the scene",
         default=False,
     )
 

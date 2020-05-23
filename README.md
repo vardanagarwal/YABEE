@@ -20,8 +20,9 @@ New minor features
 - Automatic selection
 - Apply object transform
 
-**These features activated by default**, uncheck them first if you don't use them and manually select your object(s). 
-**"Apply object transform"** will change **only copy** of the scene prepared for an export.
+**These features activated by default**, uncheck them first if you don't use them and manually select your object(s).
+**Automatic selection** automatically selects all objects in the scene. 
+**Apply object transform** will change **only copy** of the scene prepared for an export.
 
 <img src="https://i.imgur.com/T07Jz7a.png" />
 
