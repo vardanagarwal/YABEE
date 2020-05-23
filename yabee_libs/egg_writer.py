@@ -26,6 +26,8 @@ ANIM_ONLY = None
 CALC_TBS = None
 TEXTURE_PROCESSOR = None
 BAKE_LAYERS = None
+AUTOSELECT = None
+APPLY_OBJ_TRANSFORM = None
 MERGE_ACTOR_MESH = None
 APPLY_MOD = None
 APPLY_COLL_TAG = None
@@ -1406,11 +1408,12 @@ def generate_shadow_uvs():
 #                           WRITE OUT
 # -----------------------------------------------------------------------
 def write_out(fname, anims, from_actions, uv_img_as_tex, sep_anim, a_only,
-              copy_tex, t_path, tbs, tex_processor, b_layers,
-              m_actor, apply_m, apply_coll_tag, pview, loop_normals, export_pbs, force_export_vertex_colors, objects=None):
+              copy_tex, t_path, tbs, tex_processor, b_layers, autoselect,
+              apply_obj_transform, m_actor, apply_m, apply_coll_tag, pview,
+              loop_normals, export_pbs, force_export_vertex_colors, objects=None):
     global FILE_PATH, ANIMATIONS, ANIMS_FROM_ACTIONS, EXPORT_UV_IMAGE_AS_TEXTURE, \
         COPY_TEX_FILES, TEX_PATH, SEPARATE_ANIM_FILE, ANIM_ONLY, \
-        STRF, CALC_TBS, TEXTURE_PROCESSOR, BAKE_LAYERS, \
+        STRF, CALC_TBS, TEXTURE_PROCESSOR, BAKE_LAYERS, AUTOSELECT, APPLY_OBJ_TRANSFORM, \
         MERGE_ACTOR_MESH, APPLY_MOD, APPLY_COLL_TAG, PVIEW, USED_MATERIALS, USED_TEXTURES, \
         USE_LOOP_NORMALS, EXPORT_PBS, FORCE_EXPORT_VERTEX_COLORS
     importlib.reload(sys.modules[lib_name + '.texture_processor'])
@@ -1428,6 +1431,8 @@ def write_out(fname, anims, from_actions, uv_img_as_tex, sep_anim, a_only,
     TEX_PATH = t_path
     TEXTURE_PROCESSOR = tex_processor
     BAKE_LAYERS = b_layers
+    AUTOSELECT = autoselect
+    APPLY_OBJ_TRANSFORM = apply_obj_transform
     MERGE_ACTOR_MESH = m_actor
     APPLY_MOD = apply_m
     APPLY_COLL_TAG = apply_coll_tag
@@ -1439,6 +1444,11 @@ def write_out(fname, anims, from_actions, uv_img_as_tex, sep_anim, a_only,
 
     def str_f(x):
         return s_acc % x
+
+    if AUTOSELECT:
+        bpy.ops.object.select_all(action='SELECT')
+    else:
+        bpy.ops.object.select_all(action='DESELECT')
 
     STRF = str_f
     # Prepare copy of the scene.
@@ -1497,6 +1507,10 @@ def write_out(fname, anims, from_actions, uv_img_as_tex, sep_anim, a_only,
                             if obj.yabee_name in selected_obj]
 
     bpy.ops.scene.new(type='FULL_COPY')
+
+    if APPLY_OBJ_TRANSFORM:
+        bpy.ops.object.transform_apply()
+
     try:
         obj_list = [obj for obj in bpy.context.scene.objects
                     if obj.yabee_name in selected_obj]

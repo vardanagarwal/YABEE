@@ -1,7 +1,7 @@
 ![logo](http://i.imgur.com/lVMTcfS.png)
 
 
-YABEE 14.8
+YABEE 14.9
 =====
 Renewed Egg exporter for Blender 2.8 and Panda3D
 
@@ -14,6 +14,16 @@ Exporting:
 - Armature (skeleton) animation
 - ShapeKeys (morph) animation
 - Non-cyclic NURBS Curves
+
+New minor features
+=====
+- Automatic selection
+- Apply object transform
+
+**These features activated by default**, uncheck them first if you don't use them and manually select your object(s). 
+**"Apply object transform"** will change **only copy** of the scene prepared for an export.
+
+<img src="https://i.imgur.com/T07Jz7a.png" />
 
 Missing features/TODO
 =====
