@@ -272,7 +272,7 @@ class EGGNurbsCurveObjectData(EGGBaseObjectData):
         idx = 0
         for spline in self.obj_ref.data.splines:
             for vtx in spline.points:
-                co = self.obj_ref.matrix_world * vtx.co
+                co = self.obj_ref.matrix_world @ vtx.co
                 fixed_co = tuple(map(lambda x: x * co[3], co[:3])) + (co[3],)
                 vertices.append('<Vertex> %i {\n  %s\n}\n' % (idx,
                                                               ' '.join(map(STRF, fixed_co))))
@@ -1576,6 +1576,15 @@ def write_out(fname, anims, from_actions, uv_img_as_tex, sep_anim, a_only,
         print('Objects for export:', [obj.yabee_name for obj in obj_list])
 
         errors += gr.make_hierarchy_from_list(obj_list)
+
+        if EXPORT_PBS:
+            # TODO: Implement export to bam format
+            """from .yabee_bam_writer import yabee_bam_writer
+            bam_export_path = os.path.split(os.path.abspath(FILE_PATH))
+            yabee_bam_writer(objects=obj_list,
+                             materials=selected_obj,
+                             path=bam_export_path)"""
+
         if not errors:
             # gr.print_hierarchy()
             gr.update_joints_data()
