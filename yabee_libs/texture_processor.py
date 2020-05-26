@@ -120,9 +120,9 @@ class PbrTextures:
 
                                         transform = []
 
-                                        # if(textureNode.use_mipmap): #todo: find the use_mipmap flag
-                                        # scalars.append(('minfilter', 'LINEAR_MIPMAP_LINEAR'))
-                                        # scalars.append(('magfilter', 'LINEAR_MIPMAP_LINEAR'))
+                                        if textureNode.interpolation == "Linear":
+                                            scalars.append(('minfilter', 'linear_mipmap_linear'))
+                                            scalars.append(('magfilter', 'linear'))
 
                                         # Process wrap modes.
                                         if textureNode.extension == 'EXTEND':

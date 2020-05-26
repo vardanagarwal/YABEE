@@ -1,7 +1,7 @@
 ![logo](http://i.imgur.com/lVMTcfS.png)
 
 
-YABEE 14.5
+YABEE 14.9
 =====
 Renewed Egg exporter for Blender 2.8 and Panda3D
 
@@ -10,16 +10,26 @@ Exporting:
 - UV layers
 - Materials 
 - Vertex colors
-- Textures (Diffuse textures and Normal maps)
+- Textures (Diffuse, Normal, Roughness)
 - Armature (skeleton) animation
 - ShapeKeys (morph) animation
 - Non-cyclic NURBS Curves
+
+New minor features
+=====
+- Automatic selection
+- Apply object transform
+
+**These features activated by default**, uncheck them first if you don't use them and manually select your object(s).
+**Automatic selection** automatically selects all objects in the scene. 
+**Apply object transform** will change **only copy** of the scene prepared for an export.
+
+<img src="https://i.imgur.com/T07Jz7a.png" />
 
 Missing features/TODO
 =====
 - Properties/tags
 - Texture baking via Cycles
-- Non-Shader Mode for Materials & Textures
 
 Principled Shader Support
 =====
@@ -31,6 +41,9 @@ in Panda3D it was possible to extend YABEE to improve the workflow for artists w
 
 <img src="https://i.imgur.com/7hEFhqr.png" />
 <p style="font-size: small">Normal mapping Example with TBS: Blender/Panda</p>
+
+<img src="https://i.imgur.com/c1PER78.png" />
+<p style="font-size: small">Putting all together</p>
 
 To use it, you have to create a material for your mesh, set up the Principled BSDF shader 
 by connecting at least the Image Texture shader and optionally UV Map.

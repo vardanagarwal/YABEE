@@ -26,8 +26,11 @@ ANIM_ONLY = None
 CALC_TBS = None
 TEXTURE_PROCESSOR = None
 BAKE_LAYERS = None
+AUTOSELECT = None
+APPLY_OBJ_TRANSFORM = None
 MERGE_ACTOR_MESH = None
 APPLY_MOD = None
+APPLY_COLL_TAG = None
 PVIEW = True
 EXPORT_PBS = False
 FORCE_EXPORT_VERTEX_COLORS = False
@@ -171,8 +174,12 @@ class Group:
             if self.object.__class__ == bpy.types.Bone:
                 egg_str.append('%s<Joint> %s {\n' % ('  ' * level, eggSafeName(self.object.yabee_name)))
             else:
-                egg_str.append('%s<Group> %s {\n  <Collide> { Polyset keep descend }\n' \
-                               % ('  ' * level, eggSafeName(self.object.yabee_name)))
+                if APPLY_COLL_TAG:
+                    egg_str.append('%s<Group> %s {\n  <Collide> { Polyset keep descend }\n' \
+                                   % ('  ' * level, eggSafeName(self.object.yabee_name)))
+                if not APPLY_COLL_TAG:
+                    egg_str.append('%s<Group> %s {\n' % ('  ' * level, eggSafeName(self.object.yabee_name)))
+
                 if self.object.type == 'MESH' \
                         and (self.object.data.shape_keys \
                              and len(self.object.data.shape_keys.key_blocks) > 1):
@@ -265,7 +272,7 @@ class EGGNurbsCurveObjectData(EGGBaseObjectData):
         idx = 0
         for spline in self.obj_ref.data.splines:
             for vtx in spline.points:
-                co = self.obj_ref.matrix_world * vtx.co
+                co = self.obj_ref.matrix_world @ vtx.co
                 fixed_co = tuple(map(lambda x: x * co[3], co[:3])) + (co[3],)
                 vertices.append('<Vertex> %i {\n  %s\n}\n' % (idx,
                                                               ' '.join(map(STRF, fixed_co))))
@@ -633,10 +640,11 @@ class EGGMeshObjectData(EGGBaseObjectData):
         rgba = self.collect_vtx_rgba
         uv = self.collect_vtx_uv
 
-        """if USE_LOOP_NORMALS and self.obj_ref.data.has_custom_normals:
+        if USE_LOOP_NORMALS and self.obj_ref.data.has_custom_normals:
+            print("INFO: Custom normals detected")
             self.map_vertex_to_loop = {self.obj_ref.data.loops[lidx].vertex_index: lidx
                                        for p in self.obj_ref.data.polygons for lidx in p.loop_indices}
-            normal = self.collect_vtx_normal_from_loop"""
+            normal = self.collect_vtx_normal_from_loop
 
         vertices = []
         idx = 0
@@ -1162,86 +1170,58 @@ def get_egg_materials_str(object_names=None):
 
         if matIsFancyPBRNode:
             if matFancyType == 0:
-                if nodeTree.links[0].to_node.name == "Principled BSDF":
-                    principled_bsdf = nodeTree.links[0].to_node
-                    if not principled_bsdf.inputs["Base Color"].is_linked:
-                        basecol = list(principled_bsdf.inputs["Base Color"].default_value)
-                    else:
-                        basecol = [1, 1, 1, 1]
-                    if not principled_bsdf.inputs["Specular"].is_linked:
-                        specular = principled_bsdf.inputs["Specular"].default_value
-                    else:
-                        specular = 1
-                    if not principled_bsdf.inputs["Metallic"].is_linked:
-                        metallic = principled_bsdf.inputs["Metallic"].default_value
-                    else:
-                        metallic = 1
-                    if not principled_bsdf.inputs["Roughness"].is_linked:
-                        roughness = principled_bsdf.inputs["Roughness"].default_value
-                    else:
-                        roughness = 1
+                objects = bpy.context.selected_objects
+                for node in bpy.data.materials[0].node_tree.nodes:
+                    if node.name == "Principled BSDF":
+                        principled_bsdf = node
+                        if not principled_bsdf.inputs["Base Color"].is_linked:
+                            basecol = list(principled_bsdf.inputs["Base Color"].default_value)
+                        else:
+                            basecol = [1, 1, 1, 1]
+                        if not principled_bsdf.inputs["Emission"].is_linked:
+                            emission = list(principled_bsdf.inputs["Emission"].default_value)
+                        else:
+                            emission = [1, 1, 1, 1]
+                        if not principled_bsdf.inputs["Specular"].is_linked:
+                            specular = principled_bsdf.inputs["Specular"].default_value
+                        else:
+                            specular = 1
+                        if not principled_bsdf.inputs["Metallic"].is_linked:
+                            metallic = principled_bsdf.inputs["Metallic"].default_value
+                        else:
+                            metallic = 1
+                        if not principled_bsdf.inputs["Roughness"].is_linked:
+                            roughness = principled_bsdf.inputs["Roughness"].default_value
+                        else:
+                            roughness = 1
+                        if not principled_bsdf.inputs["IOR"].is_linked:
+                            ior = principled_bsdf.inputs["IOR"].default_value
+                        else:
+                            ior = 1.5
 
-                    base_r = basecol[0]
-                    base_g = basecol[1]
-                    base_b = basecol[2]
-                    base_a = basecol[3]
+                        base_r = basecol[0]
+                        base_g = basecol[1]
+                        base_b = basecol[2]
+                        base_a = basecol[3]
 
-                    mat_str += '  <Scalar> baser { %s }\n' % str(base_r)
-                    mat_str += '  <Scalar> baseg { %s }\n' % str(base_g)
-                    mat_str += '  <Scalar> baseb { %s }\n' % str(base_b)
-                    mat_str += '  <Scalar> basea { %s }\n' % str(base_a)
-                    mat_str += '  <Scalar> shininess { %s }\n' % str(specular)
-                    mat_str += '  <Scalar> roughness { %s }\n' % str(roughness)
-                    mat_str += '  <Scalar> metallic { %s }\n' % str(metallic)
-                    mat_str += '  <Scalar> local { %s }\n' % str(0)
+                        emit_r = emission[0]
+                        emit_g = emission[1]
+                        emit_b = emission[2]
+                        emit_a = emission[3]
 
-                elif nodeTree.links[0].to_node.name == 'Material Output':
-                    print("INFO: {} is using for!".format(nodeTree.links[0].to_node.name)),
-                    objects = bpy.context.selected_objects
-                    for node in bpy.data.materials[0].node_tree.nodes:
-                        if node.name == "Principled BSDF":
-                            principled_bsdf = node
-                            if not principled_bsdf.inputs["Base Color"].is_linked:
-                                basecol = list(principled_bsdf.inputs["Base Color"].default_value)
-                            else:
-                                basecol = [1, 1, 1, 1]
-                            if not principled_bsdf.inputs["Specular"].is_linked:
-                                specular = principled_bsdf.inputs["Specular"].default_value
-                            else:
-                                specular = 1
-                            if not principled_bsdf.inputs["Metallic"].is_linked:
-                                metallic = principled_bsdf.inputs["Metallic"].default_value
-                            else:
-                                metallic = 1
-                            if not principled_bsdf.inputs["Roughness"].is_linked:
-                                roughness = principled_bsdf.inputs["Roughness"].default_value
-                            else:
-                                roughness = 1
-
-                            base_r = basecol[0]
-                            base_g = basecol[1]
-                            base_b = basecol[2]
-                            base_a = basecol[3]
-
-                            mat_str += '  <Scalar> baser { %s }\n' % str(base_r)
-                            mat_str += '  <Scalar> baseg { %s }\n' % str(base_g)
-                            mat_str += '  <Scalar> baseb { %s }\n' % str(base_b)
-                            mat_str += '  <Scalar> basea { %s }\n' % str(base_a)
-                            mat_str += '  <Scalar> shininess { %s }\n' % str(specular)
-                            mat_str += '  <Scalar> roughness { %s }\n' % str(roughness)
-                            mat_str += '  <Scalar> metallic { %s }\n' % str(metallic)
-                            mat_str += '  <Scalar> local { %s }\n' % str(0)
-
-                else:
-                    # TODO: Use if no input is active
-                    mat_str += '  <Scalar> baser { 1 }\n'
-                    mat_str += '  <Scalar> baseg { 1 }\n'
-                    mat_str += '  <Scalar> baseb { 1 }\n'
-                    mat_str += '  <Scalar> basea { 1 }\n'
-                    mat_str += '  <Scalar> shininess { 1 }\n'
-                    mat_str += '  <Scalar> roughness { 1 }\n'
-                    mat_str += '  <Scalar> metallic { 1 }\n'
-                    mat_str += '  <Scalar> local { 0 }\n'
+                        mat_str += '  <Scalar> baser { %s }\n' % str(base_r)
+                        mat_str += '  <Scalar> baseg { %s }\n' % str(base_g)
+                        mat_str += '  <Scalar> baseb { %s }\n' % str(base_b)
+                        mat_str += '  <Scalar> basea { %s }\n' % str(base_a)
+                        mat_str += '  <Scalar> emitr { %s }\n' % str(emit_r)
+                        mat_str += '  <Scalar> emitg { %s }\n' % str(emit_g)
+                        mat_str += '  <Scalar> emitb { %s }\n' % str(emit_b)
+                        mat_str += '  <Scalar> emita { %s }\n' % str(emit_a)
+                        mat_str += '  <Scalar> shininess { %s }\n' % str(specular)
+                        mat_str += '  <Scalar> roughness { %s }\n' % str(roughness)
+                        mat_str += '  <Scalar> metallic { %s }\n' % str(metallic)
+                        mat_str += '  <Scalar> ior { %s }\n' % str(ior)
+                        mat_str += '  <Scalar> local { %s }\n' % str(0)
 
         if matIsFancyPBRNode is False:
             print("INFO: Non-Shader Mode is using for!")
@@ -1428,12 +1408,13 @@ def generate_shadow_uvs():
 #                           WRITE OUT
 # -----------------------------------------------------------------------
 def write_out(fname, anims, from_actions, uv_img_as_tex, sep_anim, a_only,
-              copy_tex, t_path, tbs, tex_processor, b_layers,
-              m_actor, apply_m, pview, loop_normals, export_pbs, force_export_vertex_colors, objects=None):
+              copy_tex, t_path, tbs, tex_processor, b_layers, autoselect,
+              apply_obj_transform, m_actor, apply_m, apply_coll_tag, pview,
+              loop_normals, export_pbs, force_export_vertex_colors, objects=None):
     global FILE_PATH, ANIMATIONS, ANIMS_FROM_ACTIONS, EXPORT_UV_IMAGE_AS_TEXTURE, \
         COPY_TEX_FILES, TEX_PATH, SEPARATE_ANIM_FILE, ANIM_ONLY, \
-        STRF, CALC_TBS, TEXTURE_PROCESSOR, BAKE_LAYERS, \
-        MERGE_ACTOR_MESH, APPLY_MOD, PVIEW, USED_MATERIALS, USED_TEXTURES, \
+        STRF, CALC_TBS, TEXTURE_PROCESSOR, BAKE_LAYERS, AUTOSELECT, APPLY_OBJ_TRANSFORM, \
+        MERGE_ACTOR_MESH, APPLY_MOD, APPLY_COLL_TAG, PVIEW, USED_MATERIALS, USED_TEXTURES, \
         USE_LOOP_NORMALS, EXPORT_PBS, FORCE_EXPORT_VERTEX_COLORS
     importlib.reload(sys.modules[lib_name + '.texture_processor'])
     importlib.reload(sys.modules[lib_name + '.utils'])
@@ -1450,8 +1431,11 @@ def write_out(fname, anims, from_actions, uv_img_as_tex, sep_anim, a_only,
     TEX_PATH = t_path
     TEXTURE_PROCESSOR = tex_processor
     BAKE_LAYERS = b_layers
+    AUTOSELECT = autoselect
+    APPLY_OBJ_TRANSFORM = apply_obj_transform
     MERGE_ACTOR_MESH = m_actor
     APPLY_MOD = apply_m
+    APPLY_COLL_TAG = apply_coll_tag
     PVIEW = pview
     USE_LOOP_NORMALS = loop_normals
     EXPORT_PBS = export_pbs
@@ -1460,6 +1444,11 @@ def write_out(fname, anims, from_actions, uv_img_as_tex, sep_anim, a_only,
 
     def str_f(x):
         return s_acc % x
+
+    if AUTOSELECT:
+        bpy.ops.object.select_all(action='SELECT')
+    else:
+        bpy.ops.object.select_all(action='DESELECT')
 
     STRF = str_f
     # Prepare copy of the scene.
@@ -1518,6 +1507,10 @@ def write_out(fname, anims, from_actions, uv_img_as_tex, sep_anim, a_only,
                             if obj.yabee_name in selected_obj]
 
     bpy.ops.scene.new(type='FULL_COPY')
+
+    if APPLY_OBJ_TRANSFORM:
+        bpy.ops.object.transform_apply()
+
     try:
         obj_list = [obj for obj in bpy.context.scene.objects
                     if obj.yabee_name in selected_obj]
@@ -1583,6 +1576,15 @@ def write_out(fname, anims, from_actions, uv_img_as_tex, sep_anim, a_only,
         print('Objects for export:', [obj.yabee_name for obj in obj_list])
 
         errors += gr.make_hierarchy_from_list(obj_list)
+
+        if EXPORT_PBS:
+            # TODO: Implement export to bam format
+            """from .yabee_bam_writer import yabee_bam_writer
+            bam_export_path = os.path.split(os.path.abspath(FILE_PATH))
+            yabee_bam_writer(objects=obj_list,
+                             materials=selected_obj,
+                             path=bam_export_path)"""
+
         if not errors:
             # gr.print_hierarchy()
             gr.update_joints_data()
@@ -1679,13 +1681,13 @@ def write_out(fname, anims, from_actions, uv_img_as_tex, sep_anim, a_only,
 
 def write_out_test(fname, anims, uv_img_as_tex, sep_anim, a_only, copy_tex,
                    t_path, tbs, tex_processor, b_layers,
-                   m_actor, apply_m, pview):
+                   m_actor, apply_m, apply_coll_tag, pview):
     import profile
     import pstats
-    wo = "write_out('%s', %s, %s, %s, %s, '%s', %s, '%s', '%s', %s, %s, %s, %s)" % \
+    wo = "write_out('%s', %s, %s, %s, %s, '%s', %s, '%s', '%s', %s, %s, %s, %s, %s)" % \
          (fname, anims, uv_img_as_tex, sep_anim, a_only, copy_tex,
           t_path, tbs, tex_processor, b_layers,
-          m_actor, apply_m, pview)
+          m_actor, apply_m, apply_coll_tag, pview)
     wo = wo.replace('\\', '\\\\')
     profile.runctx(wo, globals(), {}, 'main_prof')
     stats = pstats.Stats('main_prof')
