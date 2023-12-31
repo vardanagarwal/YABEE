@@ -1171,57 +1171,58 @@ def get_egg_materials_str(object_names=None):
         if matIsFancyPBRNode:
             if matFancyType == 0:
                 objects = bpy.context.selected_objects
-                for node in bpy.data.materials[0].node_tree.nodes:
-                    if node.name == "Principled BSDF":
-                        principled_bsdf = node
-                        if not principled_bsdf.inputs["Base Color"].is_linked:
-                            basecol = list(principled_bsdf.inputs["Base Color"].default_value)
-                        else:
-                            basecol = [1, 1, 1, 1]
-                        if not principled_bsdf.inputs["Emission"].is_linked:
-                            emission = list(principled_bsdf.inputs["Emission"].default_value)
-                        else:
-                            emission = [1, 1, 1, 1]
-                        if not principled_bsdf.inputs["Specular"].is_linked:
-                            specular = principled_bsdf.inputs["Specular"].default_value
-                        else:
-                            specular = 1
-                        if not principled_bsdf.inputs["Metallic"].is_linked:
-                            metallic = principled_bsdf.inputs["Metallic"].default_value
-                        else:
-                            metallic = 1
-                        if not principled_bsdf.inputs["Roughness"].is_linked:
-                            roughness = principled_bsdf.inputs["Roughness"].default_value
-                        else:
-                            roughness = 1
-                        if not principled_bsdf.inputs["IOR"].is_linked:
-                            ior = principled_bsdf.inputs["IOR"].default_value
-                        else:
-                            ior = 0
+                if bpy.data.materials[0].node_tree is not None:
+                    for node in bpy.data.materials[0].node_tree.nodes:
+                        if node.name == "Principled BSDF":
+                            principled_bsdf = node
+                            if not principled_bsdf.inputs["Base Color"].is_linked:
+                                basecol = list(principled_bsdf.inputs["Base Color"].default_value)
+                            else:
+                                basecol = [1, 1, 1, 1]
+                            if not principled_bsdf.inputs["Emission"].is_linked:
+                                emission = list(principled_bsdf.inputs["Emission"].default_value)
+                            else:
+                                emission = [1, 1, 1, 1]
+                            if not principled_bsdf.inputs["Specular"].is_linked:
+                                specular = principled_bsdf.inputs["Specular"].default_value
+                            else:
+                                specular = 1
+                            if not principled_bsdf.inputs["Metallic"].is_linked:
+                                metallic = principled_bsdf.inputs["Metallic"].default_value
+                            else:
+                                metallic = 1
+                            if not principled_bsdf.inputs["Roughness"].is_linked:
+                                roughness = principled_bsdf.inputs["Roughness"].default_value
+                            else:
+                                roughness = 1
+                            if not principled_bsdf.inputs["IOR"].is_linked:
+                                ior = principled_bsdf.inputs["IOR"].default_value
+                            else:
+                                ior = 0
 
-                        base_r = basecol[0]
-                        base_g = basecol[1]
-                        base_b = basecol[2]
-                        base_a = basecol[3]
+                            base_r = basecol[0]
+                            base_g = basecol[1]
+                            base_b = basecol[2]
+                            base_a = basecol[3]
 
-                        emit_r = emission[0]
-                        emit_g = emission[1]
-                        emit_b = emission[2]
-                        emit_a = emission[3]
+                            emit_r = emission[0]
+                            emit_g = emission[1]
+                            emit_b = emission[2]
+                            emit_a = emission[3]
 
-                        mat_str += '  <Scalar> baser { %s }\n' % str(base_r)
-                        mat_str += '  <Scalar> baseg { %s }\n' % str(base_g)
-                        mat_str += '  <Scalar> baseb { %s }\n' % str(base_b)
-                        mat_str += '  <Scalar> basea { %s }\n' % str(base_a)
-                        mat_str += '  <Scalar> emitr { %s }\n' % str(emit_r)
-                        mat_str += '  <Scalar> emitg { %s }\n' % str(emit_g)
-                        mat_str += '  <Scalar> emitb { %s }\n' % str(emit_b)
-                        mat_str += '  <Scalar> emita { %s }\n' % str(emit_a)
-                        mat_str += '  <Scalar> shininess { %s }\n' % str(specular)
-                        mat_str += '  <Scalar> roughness { %s }\n' % str(roughness)
-                        mat_str += '  <Scalar> metallic { %s }\n' % str(metallic)
-                        mat_str += '  <Scalar> ior { %s }\n' % str(ior)
-                        mat_str += '  <Scalar> local { %s }\n' % str(0)
+                            mat_str += '  <Scalar> baser { %s }\n' % str(base_r)
+                            mat_str += '  <Scalar> baseg { %s }\n' % str(base_g)
+                            mat_str += '  <Scalar> baseb { %s }\n' % str(base_b)
+                            mat_str += '  <Scalar> basea { %s }\n' % str(base_a)
+                            mat_str += '  <Scalar> emitr { %s }\n' % str(emit_r)
+                            mat_str += '  <Scalar> emitg { %s }\n' % str(emit_g)
+                            mat_str += '  <Scalar> emitb { %s }\n' % str(emit_b)
+                            mat_str += '  <Scalar> emita { %s }\n' % str(emit_a)
+                            mat_str += '  <Scalar> shininess { %s }\n' % str(specular)
+                            mat_str += '  <Scalar> roughness { %s }\n' % str(roughness)
+                            mat_str += '  <Scalar> metallic { %s }\n' % str(metallic)
+                            mat_str += '  <Scalar> ior { %s }\n' % str(ior)
+                            mat_str += '  <Scalar> local { %s }\n' % str(0)
 
         if matIsFancyPBRNode is False:
             print("INFO: Non-Shader Mode is using for!")
@@ -1665,16 +1666,17 @@ def write_out(fname, anims, from_actions, uv_img_as_tex, sep_anim, a_only,
     # we should do it by hand. I recommend to save the .blend file before
     # exporting and reload it after.
     bpy.ops.scene.delete()
-    for d in old_data:
-        for obj in d:
-            if obj not in old_data[d]:
-                # print("{} has {} users. Proceeding to clear.".format(obj.name, obj.users))
-                obj.user_clear()
-                try:
-                    d.remove(obj, do_unlink=True)
-                except:
-                    print('WARNING: Can\'t delete', obj, 'from', d)
-    return errors
+    print('INFO: Reached here')
+    # for d in old_data:
+    #     for obj in d:
+    #         if obj not in old_data[d]:
+    #             # print("{} has {} users. Proceeding to clear.".format(obj.name, obj.users))
+    #             obj.user_clear()
+    #             try:
+    #                 d.remove(obj, do_unlink=True)
+    #             except:
+    #                 print('WARNING: Can\'t delete', obj, 'from', d)
+    # return errors
 
 
 def write_out_test(fname, anims, uv_img_as_tex, sep_anim, a_only, copy_tex,
